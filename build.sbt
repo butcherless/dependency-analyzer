@@ -34,7 +34,6 @@ lazy val `dependency-analyzer` = (project in file("."))
     name                       := "dependency-analyzer-app",
     libraryDependencies ++= Seq(
       figlet4s,
-      akkaStream,
       json4s,
       justSemver,
       sttpCore,
