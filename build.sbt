@@ -32,7 +32,6 @@ lazy val `dependency-analyzer` = (project in file("."))
     parallelExecution          := false,
     commonSettings,
     name                       := "dependency-analyzer-app",
-    version                    := "1.0.0",
     libraryDependencies ++= Seq(
       figlet4s,
       akkaStream,
