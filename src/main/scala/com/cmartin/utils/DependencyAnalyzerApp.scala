@@ -20,7 +20,7 @@ import zio._
   * `R` arameter is similar to dependency injection and the `provide` function
   * can be thought of as `inject`.
   */
-object DependencyLookoutApp
+object DependencyAnalyzerApp
     extends ZIOAppDefault {
 
   override val bootstrap = ConfigHelper.loggingLayer

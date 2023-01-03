@@ -36,6 +36,7 @@ lazy val `dependency-analyzer` = (project in file("."))
       figlet4s,
       json4s,
       justSemver,
+      logback,
       sttpCore,
       sttpZio,
       sttpZioJson,
@@ -49,7 +50,8 @@ lazy val `dependency-analyzer` = (project in file("."))
       "DL_FILENAME"   -> "/tmp/dep-list.log",
       "DL_EXCLUSIONS" -> "com.cmartin.learn, com.cmartin.poc"
     ),
-    assembly / mainClass       := Some("com.cmartin.utils.DependencyLookoutApp"),
+    Compile / mainClass        := Some("com.cmartin.utils.DependencyAnalyzerApp"),
+    assembly / mainClass       := Some("com.cmartin.utils.DependencyAnalyzerApp"),
     assembly / assemblyJarName := "depAnalyzerApp.jar",
     dockerBaseImage            := "eclipse-temurin:17-jdk"
   )
