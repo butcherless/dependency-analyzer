@@ -11,7 +11,7 @@ Execute the following commands:
 
 ## Run the application with Docker
 
-Build de image
+Build the image
 
     sbt Docker/publishLocal 
 
@@ -19,12 +19,17 @@ Run the app
 
     sbt "dependencyList/toFile /tmp/dep-list.log -f"
     # TODO set environment variables
-    docker run --rm --name depanalyzer -v "/tmp:/tmp" dependency-lookout-app:1.0.0 /tmp/application-config.hocon
+    docker run --rm --name depanalyzer \
+      --env DL_FILENAME=/tmp/dep-list.log \
+      --env DL_EXCLUSIONS=com.cmartin.learn \
+      --volume "/tmp:/tmp" dependency-analyzer-app:1.0.0-SNAPSHOT
     
 
-## Example Maven query
+## Maven query examples
 
-    http get: http -v https://search.maven.org/solrsearch/select\?q\=g:"com.typesafe.akka"%20AND%20a:"akka-actor_2.13"%20AND%20v:"2.5.25"%20AND%20p:"jar"\&rows\=1\&wt\=json
+    http -v "https://search.maven.org/solrsearch/select?q=g:dev.zio%20AND%20a:zio_2.13&wt=json"
+
+    http -v "https://search.maven.org/solrsearch/select?q=g:com.typesafe.akka%20AND%20a:akka-actor_2.13%20AND%20v:2.5.25%20AND%20p:jar&rows=1&wt=json"
 
 ## TODOes
 
