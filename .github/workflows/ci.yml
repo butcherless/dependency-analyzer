@@ -15,7 +15,7 @@ jobs:
       #uses: olafurpg/setup-scala@v13
       uses: coursier/setup-action@v1.3.0
       with:
-        jvm: zulu@1.17 
+        jvm: zulu@17 
     - name: init
       run: sbt -v --client update 
       working-directory: ${{env.WORK_DIR}}
