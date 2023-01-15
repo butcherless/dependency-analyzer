@@ -7,3 +7,4 @@ addSbtPlugin("com.github.sbt"   % "sbt-native-packager"    % "1.9.11")
 addSbtPlugin("org.jmotor.sbt"   % "sbt-dependency-updates" % "1.2.7")
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph"   % "0.10.0-RC1")
 //addDependencyTreePlugin
+addSbtPlugin("ch.epfl.scala"    % "sbt-scalafix"           % "0.10.4")
