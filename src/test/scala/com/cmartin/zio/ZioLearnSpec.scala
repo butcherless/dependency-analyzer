@@ -4,12 +4,11 @@ import com.cmartin.utils.domain.Model.Gav
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import zio._
+import zio.Runtime.{default => runtime}
 
 class ZioLearnSpec
     extends AnyFlatSpec
     with Matchers {
-
-  val runtime = Runtime.default
 
   it should "map None to a String into the error channel" in {
     val none: Option[Int]                 = None
