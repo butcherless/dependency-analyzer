@@ -40,6 +40,7 @@ lazy val `dependency-analyzer` = (project in file("."))
       sttpCore,
       sttpZio,
       sttpZioJson,
+      ulid,
       zio,
       zioConfig,
       zioConfigTypesafe,

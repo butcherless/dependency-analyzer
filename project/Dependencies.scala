@@ -15,6 +15,8 @@ object Dependencies {
   lazy val sttpAsyncZio = "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % Versions.sttp
   lazy val sttpZioJson  = "com.softwaremill.sttp.client3" %% "zio-json"                      % Versions.sttp
 
+  lazy val ulid = "org.wvlet.airframe" %% "airframe-ulid" % Versions.ulid
+
   // Z I O  a n d  E C O S Y S T E M
   lazy val zio               = "dev.zio" %% "zio"                 % Versions.zio
   lazy val zioConfig         = "dev.zio" %% "zio-config"          % Versions.zioConfig
