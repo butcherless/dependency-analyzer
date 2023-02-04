@@ -13,8 +13,6 @@ class FileManagerSpec
     extends AnyFlatSpec
     with Matchers {
 
-  // val runtime = Runtime.default
-
   behavior of "FileManager"
 
   it should "provide the env" in {
