@@ -12,7 +12,9 @@ import scala.util.matching.Regex
   2. local and remote versions should match the same regex type
   3. compare valid local and remote versions
  */
-class VersionManagerSpec extends AnyFlatSpec with Matchers {
+class VersionManagerSpec
+    extends AnyFlatSpec
+    with Matchers {
   import VersionManagerSpec._
 
   "Regex type release X.Y.Z" should "match the collection of versions" in {
@@ -98,6 +100,19 @@ class VersionManagerSpec extends AnyFlatSpec with Matchers {
       regex.toString() shouldBe rcRegex.r.toString()
     }
   }
+
+  "Milestone version" should "match one of the regex in the collection" in {
+    val version: String       = "1.2.3-M13"
+    val result: Option[Regex] =
+      regexSet.find(pattern => pattern.matches(version))
+
+    result.nonEmpty shouldBe true
+    result.map { regex =>
+      info(regex.toString())
+      regex.toString() shouldBe milestoneRegex.r.toString()
+    }
+  }
+
 }
 
 object VersionManagerSpec {
@@ -107,5 +122,5 @@ object VersionManagerSpec {
   val rcRegex           = s"$releaseBaseRegex-RC[0-9]+$$"
   val milestoneRegex    = s"$releaseBaseRegex-M[0-9]+$$"
 
-  val regexSet: Set[Regex] = Set(releaseRegex.r, rcRegex.r, releaseFinalRegex.r)
+  val regexSet: Set[Regex] = Set(releaseRegex.r, rcRegex.r, releaseFinalRegex.r, milestoneRegex.r)
 }
