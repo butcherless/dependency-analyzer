@@ -33,6 +33,9 @@ class ZStreamPocSpec
   def calcAmountPerDay(annualAmount: Int, daysPerYear: Int): Double =
     annualAmount * daysPerYear / scala.math.pow(365, 2)
 
+  def formatAmount(amount: Double) =
+    ZIO.succeed(String.format("%.2f", roundAmount(amount)))
+
   it should "calculate sum" in {
     // GIVEN
     val initDate     = LocalDate.of(2021, 10, 11)
@@ -46,12 +49,12 @@ class ZStreamPocSpec
       ZStream.iterate(initDate)(_.plusDays(1L))
         .map(date => buildEvent(date, amountPerDay))
         .takeUntil(e => isNowDatePolicy(e.date))
-        // .tap(e => ZIO.log(e.toString()))
+        .tap(e => ZIO.log(e.toString()))
         .runFold(initAmount)(sumAmount)
 
     val result = for {
       amount          <- calculateAmount
-      formattedAmount <- ZIO.succeed(String.format("%.2f", roundAmount(amount)))
+      formattedAmount <- formatAmount(amount)
       _               <- ZIO.log(s"sum: $formattedAmount")
     } yield ()
 
