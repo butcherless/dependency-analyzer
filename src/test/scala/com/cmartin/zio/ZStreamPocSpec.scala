@@ -49,7 +49,7 @@ class ZStreamPocSpec
       ZStream.iterate(initDate)(_.plusDays(1L))
         .map(date => buildEvent(date, amountPerDay))
         .takeUntil(e => isNowDatePolicy(e.date))
-        .tap(e => ZIO.log(e.toString()))
+        // .tap(e => ZIO.log(e.toString()))
         .runFold(initAmount)(sumAmount)
 
     val result = for {
