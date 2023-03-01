@@ -23,7 +23,7 @@ import zio._
 object DependencyAnalyzerApp
     extends ZIOAppDefault {
 
-  override val bootstrap = ConfigHelper.loggingLayer
+  override val bootstrap: ULayer[Unit] = ConfigHelper.loggingLayer
 
   override def run: IO[DomainError, Unit] = {
 

@@ -10,7 +10,7 @@ import scala.util.matching.Regex
 final case class DependencyLogicManager()
     extends LogicManager {
 
-  val pattern: Regex =
+  private val pattern: Regex =
     "(^[a-z][a-z0-9-_.]+):([a-zA-Z0-9-_.]+):([0-9A-Za-z-.]+)".r
 
   override def parseLines(lines: List[String]): UIO[ParsedLines] =
@@ -46,7 +46,6 @@ final case class DependencyLogicManager()
                   )
     } yield result
   }
-
 }
 
 object DependencyLogicManager {
