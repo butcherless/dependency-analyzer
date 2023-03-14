@@ -57,7 +57,7 @@ class ZioLearnSpec
       runtime.unsafe.run(program).getOrThrowFiberFailure()
     }
 
-    failure.cause.failureOption.map { ex => ex shouldBe ErrorTwo("error-two") }
+    failure.cause.failureOption.map(ex => ex shouldBe ErrorTwo("error-two"))
   }
 
   it should "return a domain error inside Left (either)" in {

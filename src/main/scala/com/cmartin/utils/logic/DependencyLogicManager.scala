@@ -36,7 +36,7 @@ final case class DependencyLogicManager()
     H E L P E R S
    */
 
-  private def parseDepLine(line: String): IO[String, Gav] = {
+  private def parseDepLine(line: String): IO[String, Gav] =
     for {
       _        <- ZIO.logDebug(s"parsing line: $line")
       iterator <- ZIO.succeed(pattern.findAllMatchIn(line))
@@ -45,7 +45,6 @@ final case class DependencyLogicManager()
                     ZIO.fail(line)
                   )
     } yield result
-  }
 }
 
 object DependencyLogicManager {

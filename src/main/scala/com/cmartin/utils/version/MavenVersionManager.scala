@@ -9,14 +9,13 @@ import zio._
 final case class MavenVersionManager()
     extends VersionManager {
 
-  override def compare(local: Model.Gav, remote: Model.Gav): UIO[ComparatorResult] = {
+  override def compare(local: Model.Gav, remote: Model.Gav): UIO[ComparatorResult] =
     // TODO naive implementation
     local.version.compareTo(remote.version) match {
       case 0  => ZIO.succeed(ComparatorResult.Same)
       case -1 => ZIO.succeed(ComparatorResult.Newer)
       case 1  => ZIO.succeed(ComparatorResult.Older)
     }
-  }
 
 }
 
