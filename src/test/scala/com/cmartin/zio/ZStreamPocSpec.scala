@@ -33,7 +33,7 @@ class ZStreamPocSpec
   def calcAmountPerDay(annualAmount: Int, daysPerYear: Int): Double =
     annualAmount * daysPerYear / scala.math.pow(365, 2)
 
-  def formatAmount(amount: Double) =
+  def formatAmount(amount: Double): UIO[String] =
     ZIO.succeed(String.format("%.2f", roundAmount(amount)))
 
   it should "calculate sum" in {
@@ -56,13 +56,16 @@ class ZStreamPocSpec
       amount          <- calculateAmount
       formattedAmount <- formatAmount(amount)
       _               <- ZIO.log(s"sum: $formattedAmount")
-    } yield ()
+    } yield formattedAmount
 
     // THEN
-    Unsafe.unsafe { implicit u =>
+    val amount = Unsafe.unsafe { implicit u =>
       runtime.unsafe.run(result).getOrThrowFiberFailure()
     }
 
+    info(s"amount: $amount")
+
+    amount.isBlank shouldBe false
   }
 
 }
