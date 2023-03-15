@@ -10,10 +10,10 @@ object Dependencies {
 
   lazy val figlet4s = "com.colofabrix.scala" %% "figlet4s-core" % Versions.figlet4s
 
-  lazy val sttpCore     = "com.softwaremill.sttp.client3" %% "core"                          % Versions.sttp
-  lazy val sttpZio      = "com.softwaremill.sttp.client3" %% "zio"                           % Versions.sttp
-  lazy val sttpAsyncZio = "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % Versions.sttp
-  lazy val sttpZioJson  = "com.softwaremill.sttp.client3" %% "zio-json"                      % Versions.sttp
+  lazy val sttpCore     = "com.softwaremill.sttp.client4" %% "core"                          % Versions.sttp
+  lazy val sttpZio      = "com.softwaremill.sttp.client4" %% "zio"                           % Versions.sttp
+  lazy val sttpAsyncZio = "com.softwaremill.sttp.client4" %% "async-http-client-backend-zio" % Versions.sttp
+  lazy val sttpZioJson  = "com.softwaremill.sttp.client4" %% "zio-json"                      % Versions.sttp
 
   lazy val ulid = "org.wvlet.airframe" %% "airframe-ulid" % Versions.ulid
 

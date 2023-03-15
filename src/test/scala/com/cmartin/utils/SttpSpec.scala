@@ -2,15 +2,12 @@ package com.cmartin.utils
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import zio.Runtime.{default => runtime}
-import sttp.client3._
-import sttp.client3.httpclient.zio.HttpClientZioBackend
-import sttp.capabilities.WebSockets
 import sttp.capabilities.zio.ZioStreams
-import sttp.client3.SttpBackend
-import zio.Task
+import sttp.client4.{WebSocketStreamBackend, _}
+import sttp.client4.httpclient.zio.HttpClientZioBackend
 import sttp.model.StatusCode
-import zio._
+import zio.Runtime.{default => runtime}
+import zio.{Task, _}
 
 class SttpSpec
     extends AnyFlatSpec
@@ -105,7 +102,7 @@ class SttpSpec
     } yield code
 
   object SttpSpec {
-    type HttpBackend = SttpBackend[Task, ZioStreams with WebSockets]
+    type HttpBackend = WebSocketStreamBackend[Task, ZioStreams]
 
     def getRequest(url: String) =
       basicRequest

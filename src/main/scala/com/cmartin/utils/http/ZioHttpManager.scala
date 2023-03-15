@@ -3,14 +3,13 @@ package com.cmartin.utils.http
 import com.cmartin.utils.domain.HttpManager
 import com.cmartin.utils.domain.HttpManager.{retrieveFirstMajor, GavResults}
 import com.cmartin.utils.domain.Model.DomainError.NetworkError
-import com.cmartin.utils.http.ZioHttpManager._
 import com.cmartin.utils.domain.Model._
+import com.cmartin.utils.http.ZioHttpManager._
 import just.semver.SemVer
 import just.semver.SemVer.render
-import sttp.capabilities.WebSockets
 import sttp.capabilities.zio.ZioStreams
-import sttp.client3._
-import sttp.client3.ziojson._
+import sttp.client4._
+import sttp.client4.ziojson._
 import zio._
 
 final case class ZioHttpManager(client: HttpClient)
@@ -49,7 +48,7 @@ final case class ZioHttpManager(client: HttpClient)
 
 object ZioHttpManager {
 
-  type HttpClient = SttpBackend[Task, ZioStreams with WebSockets]
+  type HttpClient = WebSocketStreamBackend[Task, ZioStreams]
 
   def viewToModel(a: Artifact): Gav = {
     val parsedVersion = SemVer.parse(a.latestVersion).fold(_.toString, render)

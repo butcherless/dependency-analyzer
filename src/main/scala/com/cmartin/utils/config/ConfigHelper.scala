@@ -5,14 +5,13 @@ import com.cmartin.utils.domain.{HttpManager, IOManager, LogicManager}
 import com.cmartin.utils.file.FileManager
 import com.cmartin.utils.http.ZioHttpManager
 import com.cmartin.utils.logic.DependencyLogicManager
-import sttp.capabilities.WebSockets
 import sttp.capabilities.zio.ZioStreams
-import sttp.client3.SttpBackend
-import sttp.client3.httpclient.zio.HttpClientZioBackend
+import sttp.client4.WebSocketStreamBackend
+import sttp.client4.httpclient.zio.HttpClientZioBackend
 import zio.config.ConfigDescriptor._
 import zio.config._
 import zio.logging.backend.SLF4J
-import zio.{Clock, IO, Layer, Runtime, Task, ULayer, ZLayer}
+import zio.{Clock, IO, Runtime, Task, ULayer, ZLayer}
 
 object ConfigHelper {
 
@@ -49,7 +48,7 @@ object ConfigHelper {
      H T T P   C L I E N T   L A Y E R
    */
 
-  val clientBackendLayer: Layer[WebClientError, SttpBackend[Task, ZioStreams with WebSockets]] =
+  val clientBackendLayer: ZLayer[Any, WebClientError, WebSocketStreamBackend[Task, ZioStreams]] =
     ZLayer.scoped(HttpClientZioBackend())
       .mapError(th => WebClientError(th.getMessage))
 
@@ -58,7 +57,7 @@ object ConfigHelper {
    */
 
   type ApplicationDependencies =
-    Clock with IOManager with LogicManager with HttpManager with SttpBackend[Task, ZioStreams with WebSockets]
+    Clock with IOManager with LogicManager with HttpManager with WebSocketStreamBackend[Task, ZioStreams]
 
   val applicationLayer =
     ZLayer.make[ApplicationDependencies](
