@@ -5,10 +5,9 @@ import com.cmartin.utils.domain.Model.DomainError.ResponseError
 import com.cmartin.utils.http.ZioHttpManager
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import sttp.client3.httpclient.zio.HttpClientZioBackend
+import sttp.client4.httpclient.zio.HttpClientZioBackend
 import zio.Runtime.{default => runtime}
-import zio.ZLayer
-import zio.Unsafe
+import zio.{Unsafe, ZLayer}
 
 class ZioHttpManagerITSpec
     extends AnyFlatSpec with Matchers {
