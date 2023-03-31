@@ -2,11 +2,12 @@ package com.cmartin.zio
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import wvlet.airframe.ulid.ULID
 import zio.Runtime.{default => runtime}
 import zio._
 import zio.stream._
+
 import java.time.LocalDate
-import wvlet.airframe.ulid.ULID
 
 class ZStreamPocSpec
     extends AnyFlatSpec
@@ -66,6 +67,55 @@ class ZStreamPocSpec
     info(s"amount: $amount")
 
     amount.isBlank shouldBe false
+  }
+
+  sealed trait DomainError
+  object DomainError {
+    case object EmptyLine                   extends DomainError
+    case class InvalidLine(message: String) extends DomainError
+  }
+
+  sealed trait Line extends Product
+
+  object Line {
+    case class ValidLine(message: String) extends Line
+
+    case class InvalidLine(message: String) extends Line
+  }
+
+  def calcLineLength(line: String) =
+    ZIO.succeed(line.length)
+
+//  def checkEmptyLine(line:String) =
+
+  def validateLine(line: String) =
+    if (line.nonEmpty)
+      ZIO.succeed(Line.ValidLine(line))
+    else
+      ZIO.succeed(Line.InvalidLine("empty line"))
+
+  it should "TODO: process string lines" in {
+    val lines = List(
+      "valid_line-1",
+      "",
+      "valid_line-2",
+      "invalid_line-3",
+      "valid_line-4",
+      "invalid_line-5",
+      "valid_line-6",
+      "valid_line-7"
+    )
+
+    val program = ZStream
+      .fromIterable(lines)
+      .tap(line => ZIO.log(s"text: $line"))
+      .mapZIO(validateLine)
+      .tap(line => ZIO.log(s"line: $line"))
+      .runDrain
+
+    Unsafe.unsafe { implicit u =>
+      runtime.unsafe.run(program).getOrThrowFiberFailure()
+    }
   }
 
 }
