@@ -1,6 +1,11 @@
 name: Dependency Analyzer CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    types: [opened]
 
 jobs:
 
