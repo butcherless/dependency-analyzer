@@ -1,0 +1,31 @@
+@startuml
+skinparam monochrome true
+skinparam BoxPadding 5
+header HTTP Async operations POC
+title Read Async Report Use Client timeout Case
+
+hide footbox
+actor HttpClient as user << User >>
+
+box "REST Application" #FBFBFB
+ participant "RestApi" as api << API >>
+end box
+
+alt client timeout case
+user ->(5) api ++: GET[ReportRequest]
+api --> user --: Accepted:202 'Content-Location'
+...sleep 500 ms...
+user ->(5) api ++: GET[Report.id]
+api --> user --: NotFound:404
+...sleep 250 ms...
+user ->(5) api ++: GET[Report.id]
+api --> user --: NotFound:404
+...sleep 500 ms...
+user ->(5) api ++: GET[Report.id]
+api --> user --: NotFound:404
+
+== Reached max retries ==
+
+user -> user: FAIL[Max retries error]
+end
+@enduml
