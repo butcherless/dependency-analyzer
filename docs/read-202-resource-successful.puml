@@ -1,0 +1,32 @@
+@startuml
+skinparam monochrome true
+skinparam BoxPadding 5
+header HTTP Async operations POC
+title Read Async Report Successful Use Case
+
+hide footbox
+actor HttpClient as user << User >>
+
+box "REST Application" #FBFBFB
+ participant "RestApi" as api << API >>
+end box
+
+alt successful case
+user ->(5) api ++: GET[ReportRequest]
+api --> user --: Accepted:202 'Content-Location'
+...sleep 500 ms...
+else 1 request
+user ->(5) api ++: GET[Report.id]
+api --> user --: Ok:200 {Report}
+else 2..N requests
+user ->(5) api ++: GET[Report.id]
+api --> user --: NotFound:404
+...sleep 250 ms...
+user ->(5) api ++: GET[Report.id]
+api --> user --: NotFound:404
+...sleep 500 ms...
+user ->(5) api ++: GET[Report.id]
+api --> user --: Ok:200 {Report}
+
+end
+@enduml
