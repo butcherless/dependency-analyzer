@@ -1,4 +1,4 @@
-@startuml
+@startuml retrieve last dependecy flow diagram
 start
 :local dep input;
 :httpClient.get(search_url);
@@ -23,7 +23,7 @@ if (computation?) then (succeed)
     stop
   endif
 else (failure)
-  :NetworkError(dep);
+  :ResponseError(dep);
   stop
 endif
 end

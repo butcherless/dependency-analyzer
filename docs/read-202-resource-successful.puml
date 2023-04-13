@@ -20,10 +20,10 @@ user ->(5) api ++: GET[Report.id]
 api --> user --: Ok:200 {Report}
 else 2..N requests
 user ->(5) api ++: GET[Report.id]
-api --> user --: NotFound:404
+api --> user --: Accepted:202 'Content-Location'
 ...sleep 250 ms...
 user ->(5) api ++: GET[Report.id]
-api --> user --: NotFound:404
+api --> user --: Accepted:202 'Content-Location'
 ...sleep 500 ms...
 user ->(5) api ++: GET[Report.id]
 api --> user --: Ok:200 {Report}
