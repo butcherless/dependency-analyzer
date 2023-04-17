@@ -33,8 +33,6 @@ Run the app
 
 ## TODOes
 
-- version
-  comparator: https://github.com/apache/maven/blob/master/maven-artifact/src/main/java/org/apache/maven/artifact/versioning/ComparableVersion.java
 - manage `java.io.FileNotFoundException`
 - manage `429 Too Many Requests` HTTP status code
 
