@@ -28,6 +28,7 @@ object ConfigHelper {
       .to[AppConfig]
 
   def readFromEnv(): IO[ConfigError, AppConfig] =
+
     read(
       configDescriptor from
         ConfigSource.fromSystemEnv(valueDelimiter = Some(','))
