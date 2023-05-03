@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 package object utils {
   val toExitCode: Int => ExitCode =
-    ExitCode.apply
+    ExitCode(_)
 
   def getMillis(): URIO[Clock, Long] =
     Clock.currentTime(TimeUnit.MILLISECONDS)

@@ -18,10 +18,10 @@ final case class FileManager()
           ZIO.attempt(file.getLines().toList)
       }.orElseFail(FileIOError(s"${Model.OPEN_FILE_ERROR}: $filename"))
     }
-  override def logWrongDependencies(errors: Iterable[DomainError])               =
+  override def logWrongDependencies(errors: Iterable[DomainError]): UIO[Unit] =
     ZIO.foreachDiscard(errors)(e => ZIO.logInfo(s"invalid dependency: $e"))
 
-  override def logPairCollection(collection: Iterable[GavPair]): UIO[Iterable[String]] =
+  override def filterUpgraded(collection: Iterable[GavPair]): UIO[Iterable[String]] =
     ZIO.succeed(
       collection
         .filter(_.hasNewVersion)
@@ -32,10 +32,10 @@ final case class FileManager()
     H E L P E R S
    */
 
-  def scopedFile(filename: String): RIO[Scope, BufferedSource] =
+  private def scopedFile(filename: String): RIO[Scope, BufferedSource] =
     ZIO.fromAutoCloseable(ZIO.attempt(Source.fromFile(filename)))
 
-  def formatChanges(pair: Model.GavPair): String =
+  private def formatChanges(pair: Model.GavPair): String =
     s"${pair.local.formatShort} ${colourGreen("=>")} ${colourYellow(pair.remote.version)}"
 
 }

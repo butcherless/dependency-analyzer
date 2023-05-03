@@ -8,10 +8,8 @@ import com.cmartin.utils.logic.DependencyLogicManager
 import sttp.capabilities.zio.ZioStreams
 import sttp.client4.WebSocketStreamBackend
 import sttp.client4.httpclient.zio.HttpClientZioBackend
-import zio.config.ConfigDescriptor._
-import zio.config._
 import zio.logging.backend.SLF4J
-import zio.{Clock, IO, Runtime, Task, ULayer, ZLayer}
+import zio.{Clock, Config, ConfigProvider, IO, Runtime, Task, ULayer, ZLayer}
 
 object ConfigHelper {
 
@@ -22,22 +20,21 @@ object ConfigHelper {
    */
 
   // TODO refactor variable names to Enumeration
-  private val configDescriptor: ConfigDescriptor[AppConfig] =
-    string("DL_FILENAME")
-      .zip(list("DL_EXCLUSIONS")(string))
-      .to[AppConfig]
+  val filename: Config[String]         = Config.string("DL_FILENAME")
+  val exclusions: Config[List[String]] = Config.listOf(Config.string("DL_EXCLUSIONS"))
+  private val appConfig: Config[AppConfig]     =
+    (filename ++ exclusions).map { case (f, es) => AppConfig(f, es) }
 
   def readFromEnv(): IO[ConfigError, AppConfig] =
+    ConfigProvider.envProvider.load(appConfig)
+      .mapError(e => ConfigError(e.getMessage()))
 
-    read(
-      configDescriptor from
-        ConfigSource.fromSystemEnv(valueDelimiter = Some(','))
-    ).mapError(e => ConfigError(e.toString()))
-
+  /* TODO docs
   def printConfig(): String =
     generateDocs(configDescriptor)
       .toTable
       .toGithubFlavouredMarkdown
+   */
 
   /*
      L O G G I N G
@@ -49,7 +46,7 @@ object ConfigHelper {
      H T T P   C L I E N T   L A Y E R
    */
 
-  val clientBackendLayer: ZLayer[Any, WebClientError, WebSocketStreamBackend[Task, ZioStreams]] =
+  private val clientBackendLayer: ZLayer[Any, WebClientError, WebSocketStreamBackend[Task, ZioStreams]] =
     ZLayer.scoped(HttpClientZioBackend())
       .mapError(th => WebClientError(th.getMessage))
 
@@ -60,7 +57,7 @@ object ConfigHelper {
   type ApplicationDependencies =
     Clock with IOManager with LogicManager with HttpManager with WebSocketStreamBackend[Task, ZioStreams]
 
-  val applicationLayer =
+  val applicationLayer: ZLayer[Any, WebClientError, ApplicationDependencies] =
     ZLayer.make[ApplicationDependencies](
       ZLayer.succeed(Clock.ClockLive),
       FileManager.layer,

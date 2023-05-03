@@ -43,7 +43,7 @@ lazy val `dependency-analyzer` = (project in file("."))
       ulid,
       zio,
       zioConfig,
-      zioConfigTypesafe,
+      //zioConfigTypesafe,
       zioLogging
     ),
     Test / fork                := true,

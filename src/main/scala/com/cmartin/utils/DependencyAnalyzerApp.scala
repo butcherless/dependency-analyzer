@@ -17,7 +17,7 @@ import zio._
   *   - E: ConnectionError (ADT member)
   *   - A: Either[Exception, Results]
   *
-  * `R` arameter is similar to dependency injection and the `provide` function
+  * `R` parameter is similar to dependency injection and the `provide` function
   * can be thought of as `inject`.
   */
 object DependencyAnalyzerApp
@@ -25,12 +25,14 @@ object DependencyAnalyzerApp
 
   override val bootstrap: ULayer[Unit] = ConfigHelper.loggingLayer
 
-  override def run: IO[DomainError, Unit] = {
+  override def run
+  // : IO[DomainError, Unit]
+  = {
 
     // TODO resolve error channel type, actual Object
     val logicProgram =
       for {
-        _           <- printBanner("Dep Lookout")
+        _           <- printBanner("Dependency Analyzer")
         config      <- readFromEnv()
         startTime   <- getMillis()
         lines       <- IOManager.getLinesFromFile(config.filename)
@@ -40,18 +42,27 @@ object DependencyAnalyzerApp
         finalDeps   <- LogicManager.excludeFromList(parsedLines.successList, config.exclusions)
         results     <- HttpManager.checkDependencies(finalDeps)
         // TODO process errors
-        _           <- IOManager.logPairCollection(results.gavList) @@ iterableLog("updated dependencies")
+        _           <- IOManager.filterUpgraded(results.gavList) @@ iterableLog("upgraded dependencies")
         _           <- IOManager.logWrongDependencies(results.errors)
         _           <- calcElapsedMillis(startTime) @@ genericLog("processing time")
       } yield 0
 
     // main program
     logicProgram
-      .tapError(e => ZIO.logError(s"application error: $e"))
-      .mapError(_ => 1)
-      .fold(toExitCode, toExitCode)
-      .flatMap(exit)
       .provide(applicationLayer)
+
+    //.mapError(_ => 1)
+      //.fold(toExitCode,toExitCode)
+      //.flatMap(code => exit(code))
+//      .catchAllCause(cause =>
+//        ZIO.logError(s"${cause.prettyPrint}")
+//          .exitCode
+//      )
+
+    // .tapError(e => ZIO.logError(s"application error: $e"))
+    // .mapError(_ => 1)
+    // .fold(toExitCode, toExitCode)
+    // .flatMap(exit)
   }
 
 }

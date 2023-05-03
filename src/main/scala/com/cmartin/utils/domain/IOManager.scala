@@ -8,7 +8,7 @@ trait IOManager {
 
   def logWrongDependencies(dependencies: Iterable[DomainError]): UIO[Unit]
 
-  def logPairCollection(collection: Iterable[GavPair]): UIO[Iterable[String]]
+  def filterUpgraded(collection: Iterable[GavPair]): UIO[Iterable[String]]
 
 }
 
@@ -19,6 +19,6 @@ object IOManager {
   def logWrongDependencies(dependencies: Iterable[DomainError]): URIO[IOManager, Unit] =
     ZIO.serviceWithZIO[IOManager](_.logWrongDependencies(dependencies))
 
-  def logPairCollection(collection: Iterable[GavPair]): URIO[IOManager, Iterable[String]] =
-    ZIO.serviceWithZIO[IOManager](_.logPairCollection(collection))
+  def filterUpgraded(collection: Iterable[GavPair]): URIO[IOManager, Iterable[String]] =
+    ZIO.serviceWithZIO[IOManager](_.filterUpgraded(collection))
 }
