@@ -4,7 +4,7 @@ object Versions {
   val json4s     = "4.0.6"
   val justSemver = "0.6.0"
   val logback    = "1.4.7"
-  val scalatest  = "3.2.15"
+  val scalatest  = "3.2.16"
   val sttp       = "4.0.0-M1"
   val ulid       = "23.5.2"
   val zio        = "2.0.13"
