@@ -50,7 +50,6 @@ class SttpSpec
       "https://github.com/",
       "https://gitlab.com/",
       "https://www.google.com/",
-      "https://www.udemy.com/",
       "https://www.mutua.es/",
       "https://typelevel.org/cats/",
       "https://www.lightbend.com/",
@@ -65,7 +64,7 @@ class SttpSpec
       "https://www.youtube.com/",
       "https://kubernetes.io/",
       "https://degoes.net/",
-      "https://www.scalatest.org/"
+      "https://elpais.com/"
     )
 
     val program = HttpClientZioBackend().flatMap { backend =>
@@ -87,6 +86,7 @@ class SttpSpec
 
     def makeGetRequest(url: String) =
       for {
+        _        <- ZIO.log(s"trying get to URL: $url")
         response <- getRequest(url).send(backend).mapError(e => s"${e.getMessage()}")
         code     <- manageStatusCode(response.code)
       } yield code
