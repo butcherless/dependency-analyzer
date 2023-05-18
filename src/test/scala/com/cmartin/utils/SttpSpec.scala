@@ -34,14 +34,13 @@ class SttpSpec
       makeGetRequest(backend)
     }
 
-    val res = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.either).getOrThrowFiberFailure()
-    }
+    val res = run(program.either)
 
     res shouldBe Right(StatusCode.Ok)
   }
 
-  it should "make a GET request sequence" in {
+  // TODO integration test
+  ignore should "make a GET request sequence" in {
     val urls = Seq(
       "https://apache.org/",
       "https://sttp.softwaremill.com/",
@@ -71,9 +70,7 @@ class SttpSpec
       makeGetRequests(backend, urls)
     }
 
-    val res = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.either).getOrThrowFiberFailure()
-    }
+    val res = run(program.either)
 
     info(s"result: $res")
     res.isRight shouldBe true
@@ -116,6 +113,11 @@ class SttpSpec
       }
 
   }
+
+  private def run[E, A](program: IO[E, A]) =
+    Unsafe.unsafe { implicit u =>
+      runtime.unsafe.run(program).getOrThrowFiberFailure()
+    }
 
   /*
   ignore should "make a post request" in {
