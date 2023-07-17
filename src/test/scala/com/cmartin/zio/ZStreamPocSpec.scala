@@ -94,7 +94,7 @@ class ZStreamPocSpec
     else
       ZIO.succeed(Line.InvalidLine("empty line"))
 
-  it should "TODO: process string lines" in {
+  it should "process string lines" in {
     val lines = List(
       "valid_line-1",
       "",
@@ -115,6 +115,47 @@ class ZStreamPocSpec
 
     Unsafe.unsafe { implicit u =>
       runtime.unsafe.run(program).getOrThrowFiberFailure()
+    }
+  }
+
+  sealed trait Dependency
+
+  object Dependency {
+    case class LocalDependency(g: String, a: String, v: String)    extends Dependency
+    case class InvalidDependency(line: String, parseError: String) extends Dependency
+  }
+
+  import Dependency._
+  def parse(line: String): Dependency   =
+    line match {
+      case "valid" => LocalDependency("g", "a", "v")
+      case _       => InvalidDependency(line, "parse error")
+    }
+  def isValid(dep: Dependency): Boolean = ???
+
+  def processInvalid(dep: Dependency): Unit = ???
+  def processValid(dep: Dependency): Unit   = ???
+
+  it should "TODO:" in {
+    val valid               = "valid"
+    val invalid             = "invalid"
+    val lines: List[String] = List(valid, valid, invalid, valid, invalid, valid, valid)
+    val depStream           =
+      ZStream
+        .fromIterable(lines)
+        .map(parse)
+    val program             =
+      depStream
+        .debug
+        .partition(isValid)
+        .flatMap(streams =>
+          ZIO.succeed(streams._1.map(processInvalid) merge streams._2.map(processValid))
+        ) // .flatMap(_.runDrain)
+
+    val x = ZIO.scoped(program).flatMap(_.runDrain)
+
+    val result = Unsafe.unsafe { implicit u =>
+      runtime.unsafe.run(x).getOrThrowFiberFailure()
     }
   }
 
