@@ -1,5 +1,10 @@
 # Dependency Analyzer
 
+## Goals:
+
+- Get the updates of the dependencies of a project.
+- Verify [Semver](https://semver.org/) compliance.
+
 ## Run the standalone application
 
 Execute the following commands:
