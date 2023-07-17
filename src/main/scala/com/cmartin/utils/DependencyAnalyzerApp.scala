@@ -51,9 +51,9 @@ object DependencyAnalyzerApp
     logicProgram
       .provide(applicationLayer)
 
-    //.mapError(_ => 1)
-      //.fold(toExitCode,toExitCode)
-      //.flatMap(code => exit(code))
+    // .mapError(_ => 1)
+    // .fold(toExitCode,toExitCode)
+    // .flatMap(code => exit(code))
 //      .catchAllCause(cause =>
 //        ZIO.logError(s"${cause.prettyPrint}")
 //          .exitCode

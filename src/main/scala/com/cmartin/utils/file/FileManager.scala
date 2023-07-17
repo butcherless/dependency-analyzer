@@ -18,7 +18,7 @@ final case class FileManager()
           ZIO.attempt(file.getLines().toList)
       }.orElseFail(FileIOError(s"${Model.OPEN_FILE_ERROR}: $filename"))
     }
-  override def logWrongDependencies(errors: Iterable[DomainError]): UIO[Unit] =
+  override def logWrongDependencies(errors: Iterable[DomainError]): UIO[Unit]    =
     ZIO.foreachDiscard(errors)(e => ZIO.logInfo(s"invalid dependency: $e"))
 
   override def filterUpgraded(collection: Iterable[GavPair]): UIO[Iterable[String]] =

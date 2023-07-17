@@ -20,9 +20,9 @@ object ConfigHelper {
    */
 
   // TODO refactor variable names to Enumeration
-  val filename: Config[String]         = Config.string("DL_FILENAME")
-  val exclusions: Config[List[String]] = Config.listOf(Config.string("DL_EXCLUSIONS"))
-  private val appConfig: Config[AppConfig]     =
+  val filename: Config[String]             = Config.string("DL_FILENAME")
+  val exclusions: Config[List[String]]     = Config.listOf(Config.string("DL_EXCLUSIONS"))
+  private val appConfig: Config[AppConfig] =
     (filename ++ exclusions).map { case (f, es) => AppConfig(f, es) }
 
   def readFromEnv(): IO[ConfigError, AppConfig] =

@@ -62,7 +62,7 @@ object ZioEnvConfigApp
       _   <- ZIO.logInfo(s"fiber-id: $fid")
       _   <- exit(ExitCode(0))
     } yield 0
-    /*
+  /*
     (for {
       _         <- ZIO.logDebug("debug: loading environment variables")
       _         <- ZIO.logInfo("info: loading environment variables")
@@ -72,15 +72,15 @@ object ZioEnvConfigApp
     } yield result)
   }*/
 
-    // .flatMap(_ => exit(ExitCode(0)))
+  // .flatMap(_ => exit(ExitCode(0)))
 
-    // .mapError(_ => 1)
-    // .flatMap(code => exit(ExitCode(code)))
-    // .fold(errorCode => ExitCode(errorCode), code => ExitCode(code))
-    // .flatMap(code => exit(code))
+  // .mapError(_ => 1)
+  // .flatMap(code => exit(ExitCode(code)))
+  // .fold(errorCode => ExitCode(errorCode), code => ExitCode(code))
+  // .flatMap(code => exit(code))
 
-    // .catchAllCause(cause =>
-    // ZIO.logError(s"${cause.prettyPrint}")
-    // .exitCode
-    // )
+  // .catchAllCause(cause =>
+  // ZIO.logError(s"${cause.prettyPrint}")
+  // .exitCode
+  // )
 }
