@@ -21,3 +21,7 @@
 - case ko: 
   - create an InvalidDependency object `InvalidDependency(line,parse-error)`
   - log the invalid dependency
+
+## Links
+
+- https://www.baeldung.com/ops/kafka-list-topics
