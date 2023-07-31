@@ -60,9 +60,7 @@ class ZStreamPocSpec
     } yield formattedAmount
 
     // THEN
-    val amount = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(result).getOrThrowFiberFailure()
-    }
+    val amount = run(result)
 
     info(s"amount: $amount")
 
@@ -113,22 +111,22 @@ class ZStreamPocSpec
       .tap(line => ZIO.log(s"line: $line"))
       .runDrain
 
-    Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program).getOrThrowFiberFailure()
-    }
+    run(program)
   }
 
   sealed trait Dependency
 
   object Dependency {
-    case class LocalDependency(g: String, a: String, v: String)    extends Dependency
-    case class InvalidDependency(line: String, parseError: String) extends Dependency
+    case class MavenDependency(g: String, a: String, v: String)                  extends Dependency
+    case class InvalidDependency(line: String, parseError: String)               extends Dependency
+    case class MissingRemoteDependency(dep: MavenDependency, error: String)      extends Dependency
+    case class RemoteDependency(local: MavenDependency, remote: MavenDependency) extends Dependency
   }
 
   import Dependency._
   def parse(line: String): Dependency   =
     line match {
-      case "valid" => LocalDependency("g", "a", "v")
+      case "valid" => MavenDependency("g", "a", "v")
       case _       => InvalidDependency(line, "parse error")
     }
   def isValid(dep: Dependency): Boolean = ???
@@ -136,7 +134,7 @@ class ZStreamPocSpec
   def processInvalid(dep: Dependency): Unit = ???
   def processValid(dep: Dependency): Unit   = ???
 
-  it should "TODO:" in {
+  it should "TODO: A" in {
     val valid               = "valid"
     val invalid             = "invalid"
     val lines: List[String] = List(valid, valid, invalid, valid, invalid, valid, valid)
@@ -149,14 +147,60 @@ class ZStreamPocSpec
         .debug
         .partition(isValid)
         .flatMap(streams =>
-          ZIO.succeed(streams._1.map(processInvalid) merge streams._2.map(processValid))
+          ZIO.succeed(streams._1.map(processValid) merge streams._2.map(processInvalid))
         ) // .flatMap(_.runDrain)
 
     val x = ZIO.scoped(program).flatMap(_.runDrain)
 
-    val result = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(x).getOrThrowFiberFailure()
-    }
+    val result = run(x)
   }
 
+  def processLine(line: String): IO[String, Dependency]              = ???
+  def processDependency(dep: Dependency): IO[String, Dependency]     = ???
+  def processInvalid(dep: InvalidDependency): IO[String, Dependency] = ???
+  def processValid(dep: InvalidDependency): IO[String, Dependency]   = ???
+  def parseLine(line: String): IO[String, Dependency]                = ???
+
+  it should "TODO: B" in {
+    val lineStream: ZStream[Any, Nothing, String] = ???
+
+    val parsedLines = lineStream.mapZIO(parseLine)
+    val x11         = parsedLines.partition(isValid)
+    val x12         = x11.flatMap { case (validStream, invalidStream) =>
+      val ok = validStream
+      // val ko = invalidStream.mapZIO(processInvalid)
+
+      // ZIO.succeed(ok merge ko)
+      ???
+    }
+
+    val r: ZStream[Any, String, Dependency] = lineStream
+      .mapZIO(processLine)
+      .mapZIO(processDependency)
+
+    val dependencies: ZStream[Any, Nothing, Dependency] = lineStream.map(parse)
+
+    val x1: ZIO[Any, Nothing, (ZStream[Any, Nothing, Dependency], ZStream[Any, Nothing, Dependency])] =
+      ZIO.scoped(dependencies.partition(isValid))
+
+    val validDeps: ZStream[Any, Nothing, Dependency]   = ???
+    val invalidDeps: ZStream[Any, Nothing, Dependency] = ???
+    val remoteDeps: ZStream[Any, Nothing, Dependency]  = ???
+
+    val x2 = invalidDeps merge validDeps merge remoteDeps
+
+    val s1: ZStream[Any, Nothing, String] = ZStream("1", "2", "3")
+    val s2: ZStream[Any, Nothing, Double] = ZStream(4.1, 5.3, 6.2)
+
+    val merged: ZStream[Any, Nothing, Int] =
+      s1.mergeWith(s2)(_.toInt, _.toInt)
+
+    val mergedStream: ZStream[Any, Nothing, Dependency] =
+      ZStream.mergeAll(3)(validDeps, invalidDeps, remoteDeps)
+  }
+
+  private def run[E, A](program: ZIO[Any, E, A]) =
+    Unsafe.unsafe { implicit u =>
+      runtime.unsafe.run(program).getOrThrowFiberFailure()
+    }
 }
