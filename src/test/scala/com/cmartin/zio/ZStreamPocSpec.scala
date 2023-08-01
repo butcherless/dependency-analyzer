@@ -155,24 +155,30 @@ class ZStreamPocSpec
     val result = run(x)
   }
 
-  def processLine(line: String): IO[String, Dependency]              = ???
-  def processDependency(dep: Dependency): IO[String, Dependency]     = ???
-  def processInvalid(dep: InvalidDependency): IO[String, Dependency] = ???
-  def processValid(dep: InvalidDependency): IO[String, Dependency]   = ???
-  def parseLine(line: String): IO[String, Dependency]                = ???
+  def processLine(line: String): IO[String, Dependency]          = ???
+  def processDependency(dep: Dependency): IO[String, Dependency] = ???
+  def process2Invalid(dep: Dependency): IO[String, Dependency]   = ???
+  def process2Valid(dep: Dependency): IO[String, Dependency]     =
+    dep match {
+      case MavenDependency(g, a, v) => ZIO.succeed(MavenDependency(g, a, v))
+      case _                        => ZIO.fail("This type of dependency is not expected")
+    }
+
+  def parseLine(line: String): IO[String, Dependency] = ???
 
   it should "TODO: B" in {
     val lineStream: ZStream[Any, Nothing, String] = ???
 
-    val parsedLines = lineStream.mapZIO(parseLine)
-    val x11         = parsedLines.partition(isValid)
-    val x12         = x11.flatMap { case (validStream, invalidStream) =>
-      val ok = validStream
-      // val ko = invalidStream.mapZIO(processInvalid)
+    val parsedLines         = lineStream.mapZIO(parseLine)
+    val dependencyPartition = parsedLines.partition(isValid)
 
-      // ZIO.succeed(ok merge ko)
-      ???
+    val x12 = dependencyPartition.flatMap { case (validStream, invalidStream) =>
+      val ok = validStream.mapZIO(process2Valid)
+      val ko = invalidStream.mapZIO(process2Invalid)
+
+      ZIO.succeed(ok merge ko)
     }
+    val xx  = x12.flatMap(_.run(ZSink.drain))
 
     val r: ZStream[Any, String, Dependency] = lineStream
       .mapZIO(processLine)
