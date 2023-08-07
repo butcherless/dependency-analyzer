@@ -8,6 +8,7 @@ import zio._
 import zio.stream._
 
 import java.time.LocalDate
+import scala.util.matching.Regex
 
 class ZStreamPocSpec
     extends AnyFlatSpec
@@ -117,7 +118,16 @@ class ZStreamPocSpec
   sealed trait Dependency
 
   object Dependency {
-    case class MavenDependency(g: String, a: String, v: String)                  extends Dependency
+    case class MavenDependency(g: String, a: String, v: String) extends Dependency
+    object MavenDependency {
+      def fromRegexMatch(regexMatch: Regex.Match): MavenDependency =
+        MavenDependency(
+          regexMatch.group(1), // group
+          regexMatch.group(2), // artifact
+          regexMatch.group(3)  // version
+        )
+
+    }
     case class InvalidDependency(line: String, parseError: String)               extends Dependency
     case class MissingRemoteDependency(dep: MavenDependency, error: String)      extends Dependency
     case class RemoteDependency(local: MavenDependency, remote: MavenDependency) extends Dependency
@@ -203,6 +213,51 @@ class ZStreamPocSpec
 
     val mergedStream: ZStream[Any, Nothing, Dependency] =
       ZStream.mergeAll(3)(validDeps, invalidDeps, remoteDeps)
+  }
+
+  private val pattern: Regex =
+    "(^[a-z][a-z0-9-_.]+):([a-zA-Z0-9-_.]+):([0-9A-Za-z-.]+)".r
+
+  private def parseDepLine(line: String): Task[Dependency] = {
+    def extractDependency(iterator: Iterator[Regex.Match]) =
+      if (iterator.hasNext) ZIO.succeed(MavenDependency.fromRegexMatch(iterator.next()))
+      else ZIO.succeed(InvalidDependency(line, "regex does not match"))
+
+    for {
+      _             <- ZIO.logDebug(s"parsing line: $line")
+      matchIterator <- ZIO.succeed(pattern.findAllMatchIn(line))
+      result        <- extractDependency(matchIterator)
+    } yield result
+  }
+
+  it should "process a stream from a dependency file" in {
+    val filename                                     = "/tmp/dep-list.log"
+    val program =
+    //: ZStream[Any, Throwable, Dependency] =
+      ZStream.fromIteratorScoped(
+        ZIO.fromAutoCloseable(
+          ZIO.attempt(scala.io.Source.fromFile(filename))
+        ).map(_.getLines())
+      ).tap(line => ZIO.log(s"line: $line"))
+        .mapZIO(parseDepLine)
+        //.tap(dep => ZIO.log(s"dependency: $dep"))
+        .partition(isValidDep).flatMap{ case (validStream, invalidStream) =>
+
+        ZStream.mergeAll(2)(
+          validStream.tap(dep => ZIO.log(s"valid dependency: $dep")),
+          invalidStream.tap(dep => ZIO.log(s"invalid dependency: $dep")))
+          .runDrain
+        }
+
+    run( ZIO.scoped( program))
+  }
+
+
+  private def isValidDep(dep: Dependency) = {
+    dep match {
+      case MavenDependency(_,_,_) => true
+      case _ => false
+    }
   }
 
   private def run[E, A](program: ZIO[Any, E, A]) =
