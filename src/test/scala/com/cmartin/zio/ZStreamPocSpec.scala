@@ -176,7 +176,8 @@ class ZStreamPocSpec
 
   def parseLine(line: String): IO[String, Dependency] = ???
 
-  it should "TODO: B" in {
+  // TODO
+  ignore should "TODO: B" in {
     val lineStream: ZStream[Any, Nothing, String] = ???
 
     val parsedLines         = lineStream.mapZIO(parseLine)
@@ -216,7 +217,7 @@ class ZStreamPocSpec
   }
 
   private val pattern: Regex =
-    "(^[a-z][a-z0-9-_.]+):([a-zA-Z0-9-_.]+):([0-9A-Za-z-.]+)".r
+    "(^[a-z][a-z0-9-_.]+):([a-z0-9-_.]+):([0-9]{1,2}\\.[0-9]{1,2}[0-9A-Za-z-.]*)".r
 
   private def parseDepLine(line: String): Task[Dependency] = {
     def extractDependency(iterator: Iterator[Regex.Match]) =
@@ -231,37 +232,73 @@ class ZStreamPocSpec
   }
 
   it should "process a stream from a dependency file" in {
-    val filename                                     = "/tmp/dep-list.log"
+    val filename = "/tmp/dep-list.log"
     val program =
-    //: ZStream[Any, Throwable, Dependency] =
+      // : ZStream[Any, Throwable, Dependency] =
       ZStream.fromIteratorScoped(
         ZIO.fromAutoCloseable(
           ZIO.attempt(scala.io.Source.fromFile(filename))
         ).map(_.getLines())
       ).tap(line => ZIO.log(s"line: $line"))
         .mapZIO(parseDepLine)
-        //.tap(dep => ZIO.log(s"dependency: $dep"))
-        .partition(isValidDep).flatMap{ case (validStream, invalidStream) =>
-
-        ZStream.mergeAll(2)(
-          validStream.tap(dep => ZIO.log(s"valid dependency: $dep")),
-          invalidStream.tap(dep => ZIO.log(s"invalid dependency: $dep")))
-          .runDrain
+        // .tap(dep => ZIO.log(s"dependency: $dep"))
+        .partition(isValidDep).flatMap { case (validStream, invalidStream) =>
+          ZStream.mergeAll(2)(
+            validStream.tap(dep => ZIO.log(s"valid dependency: $dep")),
+            invalidStream.tap(dep => ZIO.log(s"invalid dependency: $dep"))
+          )
+            .runDrain
         }
 
-    run( ZIO.scoped( program))
+    run(ZIO.scoped(program))
   }
 
-
-  private def isValidDep(dep: Dependency) = {
+  private def isValidDep(dep: Dependency) =
     dep match {
-      case MavenDependency(_,_,_) => true
-      case _ => false
+      case MavenDependency(_, _, _) => true
+      case _                        => false
     }
-  }
 
   private def run[E, A](program: ZIO[Any, E, A]) =
     Unsafe.unsafe { implicit u =>
       runtime.unsafe.run(program).getOrThrowFiberFailure()
     }
+
+  object Poc {
+    sealed trait Base             extends Product with Serializable
+    case class Valid(a: Long)     extends Base
+    case class Invalid(a: String) extends Base
+
+    // partition function
+    def isValid(base: Base): Boolean = base match {
+      case Valid(_)   => true
+      case Invalid(_) => false
+    }
+    def parse(s: String): Base       = ???
+
+    val lines: List[String] = ???
+
+    val s2: ZStream[Any, Nothing, Base] = ???
+
+    def processValid(base: Base): Valid = base match {
+      case Valid(a) => Valid(a)
+      case _        => throw new RuntimeException("invalid type") // TODO fail with domain error
+    }
+
+    val s3                                  = s2.map(processValid)
+    val s4                                  = s2.map(processInvalid)
+    def processInvalid(base: Base): Invalid = ???
+
+    // TODO manage error channel
+    val s1 = for {
+      tuple   <- ZStream.fromIterable(lines).map(parse).partition(isValid)
+      (vs, is) = tuple
+      count   <- ZStream.mergeAll(2)(
+                   vs.map(processValid),
+                   is.map(processValid)
+                 ).run(ZSink.count)
+    } yield count
+
+    val result = ZIO.scoped(s1)
+  }
 }
