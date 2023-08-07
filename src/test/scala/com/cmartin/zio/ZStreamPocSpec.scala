@@ -232,7 +232,7 @@ class ZStreamPocSpec
   }
 
   it should "process a stream from a dependency file" in {
-    val filename = "/tmp/dep-list.log"
+    val filename = "src/test/resources/dep-list.log"
     val program =
       // : ZStream[Any, Throwable, Dependency] =
       ZStream.fromIteratorScoped(
