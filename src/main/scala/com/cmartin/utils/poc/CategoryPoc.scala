@@ -18,9 +18,9 @@ object CategoryPoc
     val planes       = List("A320neo", "A330neo", "A350-900", "B787-10X", "B787-9")
 
     val categories = Map(
-      "family"       -> family,
+      "planes"       -> planes,
       "basicFantasy" -> basicFantasy,
-      "planes"       -> planes
+      "family"       -> family
     )
   }
 
@@ -42,16 +42,28 @@ object CategoryPoc
 
   }
 
+  /** Retrieves all items from all categories.
+    *   - retrieves all categories
+    *   - retrieves all items from each category
+    *   - maps to (group, item) tuple
+    *   - groups by group (key)
+    *   - resolve item Stream to List
+    *   - maps to (group, item-list)
+    *   - resolve (group, item-list) Stream to Map
+    * @param categoryRepository
+    *   dummy category repository
+    */
   case class ZioFindCategoriesUseCase(categoryRepository: CategoryRepository) {
     def execute(): IO[RepoError, Map[Group, List[Item]]] =
       categoryRepository.findAllKeys()
-        .flatMap(key =>
-          categoryRepository.findAllKeyValues(key)
-            .map(product => (key, product))
-        ).groupBy(groupItem => ZIO.succeed(groupItem._1, groupItem._2)) { case (group, items) =>
+        .flatMap(group =>
+          categoryRepository.findAllKeyValues(group)
+            .map(item => (group, item))
+        ).groupBy { case (group, item) => ZIO.succeed(group, item) } { case (group, items) =>
           ZStream.fromZIO(items.runFold(List.empty[Item])((list, item) => list :+ item))
             .map(items => (group, items))
-        }.runFold(Map.empty[Group, List[Item]])((map, groupItems) => map + (groupItems._1 -> groupItems._2))
+        }.runFold(Map.empty[Group, List[Item]]) { case (map, (group, item)) => map + (group -> item) }
+
   }
 
   val repo    = InMemoryCategoryRepository()
@@ -61,7 +73,7 @@ object CategoryPoc
     for {
       _   <- ZIO.log("hello categories")
       map <- useCase.execute()
-      _   <- ZIO.log(s"category map: ${map.mkString("\n", "\n", "\n")}")
+      _   <- ZIO.log(s"category map: ${map.mkString("\n\n", "\n", "\n\n")}")
     } yield ()
 
 }
