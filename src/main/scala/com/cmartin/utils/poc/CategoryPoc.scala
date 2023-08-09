@@ -3,6 +3,13 @@ package com.cmartin.utils.poc
 import zio.stream.ZStream
 import zio._
 
+/** Running steps:
+  *   - git clone https://github.com/butcherless/dependency-analyzer.git
+  *   - cd dependency-analyzer
+  *   - sdk use java 17... / 20...
+  *   - sdk install sbt 1.9.3
+  *   - sbt "runMain com.cmartin.utils.poc.CategoryPoc"
+  */
 object CategoryPoc
     extends ZIOAppDefault {
 
