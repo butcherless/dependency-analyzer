@@ -44,7 +44,7 @@ object CategoryPoc
     override def findAllKeyValues(key: String): ZStream[Any, RepoError, Product] =
       generateFamily(key)
 
-    /*
+    /* Data generator
       ZStream.fromIterable(
         Data.categories.get(key)
           .fold(List.empty[Product])(identity)
@@ -52,6 +52,16 @@ object CategoryPoc
      */
 
   }
+
+  def generateRandomInt(): Int =
+    scala.util.Random.between(5, 100 + 1)
+
+  def generateFamily(name: String): ZStream[Any, RepoError, Product] =
+    ZStream.iterate(1)(_ + 1).takeWhile(_ <= 100)
+      .schedule(Schedule.spaced(generateRandomInt().milliseconds))
+      .map(a => s"$name-$a")
+      // .foreach(a => Console.printLine(s"element: $a"))
+      .mapError(e => e.toString())
 
   /** Retrieves all Products from all categories.
     *   - retrieves all categories
@@ -90,16 +100,6 @@ object CategoryPoc
   val repo    = InMemoryCategoryRepository()
   val useCase = ZioFindCategoriesUseCase(repo)
 
-  def generateRandomInt() =
-    scala.util.Random.between(5, 100 + 1)
-
-  def generateFamily(name: String): ZStream[Any, RepoError, Product] =
-    ZStream.iterate(1)(_ + 1).takeWhile(_ <= 100)
-      .schedule(Schedule.spaced(generateRandomInt().milliseconds))
-      .map(a => s"$name-$a")
-      // .foreach(a => Console.printLine(s"element: $a"))
-      .mapError(e => e.toString())
-
   override def run =
     for {
       _   <- ZIO.log("hello categories")
@@ -110,17 +110,20 @@ object CategoryPoc
 
 }
 
-/*
+/* Streams analysis
+   - cartesian prouct: category x product
+   - parallelism
 
-( c1, p11 ) + ( c1, p12 ) + ( c1, p13 ) lento  4s
-( c2, p21 ) + ( c2, p22 )  1s
-( c3, p31 ) + ( c3, p31 ) + ( c3, p3 ) 2s
+(ca, pa1) + (ca, pa2) + (ca, pa3)  t = 4s
+(cb, pb1) + (cb, pb2)              t = 1s
+(cc, pc1) + (cc, pc1) + (cc, pc3)  t = 2s
 
-----
--
+--------
 --
+----
 
- ( c1, p11 ) + ( c3, p31 ) + ( c2, p21 ) + ( c2, p22 ) ...... déjalo fluir
- groupByKey( funcion )
+(ca, pa1) + (cc, pc1) + (cb, pb1) + (cb, pb2) ...... cartesian prouct, parallelism
+groupByKey( function )
+toMap
 
  */
