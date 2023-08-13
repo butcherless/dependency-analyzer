@@ -53,7 +53,6 @@ lazy val `dependency-analyzer` = (project in file("."))
     assembly / assemblyJarName := "depAnalyzerApp.jar",
     dockerBaseImage            := "eclipse-temurin:17-jdk"
   )
-  // .dependsOn(common)
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(DockerPlugin)
 
