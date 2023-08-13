@@ -42,8 +42,8 @@ object CategoryPoc
       ZStream.fromIterable(Data.categories.keys)
 
     override def findAllKeyValues(key: String): ZStream[Any, RepoError, Product] =
-      generateFamily(key)
-
+      if (key == "planes") generateFamily(key)(20)
+      else generateFamily(key)(5)
     /* Data generator
       ZStream.fromIterable(
         Data.categories.get(key)
@@ -53,15 +53,15 @@ object CategoryPoc
 
   }
 
-  def generateRandomInt(): Int =
+  private def generateRandomInt(): Int =
     scala.util.Random.between(5, 100 + 1)
 
-  def generateFamily(name: String): ZStream[Any, RepoError, Product] =
-    ZStream.iterate(1)(_ + 1).takeWhile(_ <= 100)
+  private def generateFamily(name: String)(size: Int = 100): ZStream[Any, RepoError, Product] =
+    ZStream.iterate(1)(_ + 1).takeWhile(_ <= size)
       .schedule(Schedule.spaced(generateRandomInt().milliseconds))
       .map(a => s"$name-$a")
       // .foreach(a => Console.printLine(s"element: $a"))
-      .mapError(e => e.toString())
+      .mapError(e => e.toString)
 
   /** Retrieves all Products from all categories.
     *   - retrieves all categories
@@ -81,11 +81,11 @@ object CategoryPoc
 
     def execute(): IO[RepoError, Map[Group, List[Product]]] =
       categoryRepository.findAllKeys()
-        .flatMapPar(3)(groupKey =>
+        .flatMapPar(2)(groupKey =>
           categoryRepository.findAllKeyValues(groupKey)
             .map(product => (groupKey, product))
-            .tap(a => ZIO.log(s"elem: $a"))
-        // .tap(a => Console.printLine(s"elem: $a").orDie)
+            // .tap(a => ZIO.log(s"elem: $a"))
+            .tap(a => Console.printLine(s"elem: $a").orDie)
         ).groupBy { case (group, product) =>
           ZIO.succeed(group, product)
         } { case (group, products) =>
