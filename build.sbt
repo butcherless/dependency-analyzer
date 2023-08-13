@@ -23,10 +23,8 @@ lazy val commonSettings = Seq(
   scalacOptions ++= basicScalacOptions
 )
 
-lazy val `dependency-analyzer` = (project in file("."))
-  .configs(IntegrationTest)
+lazy val application = (project in file("application"))
   .settings(
-    Defaults.itSettings,
     parallelExecution          := false,
     commonSettings,
     name                       := "dependency-analyzer-app",
@@ -55,6 +53,14 @@ lazy val `dependency-analyzer` = (project in file("."))
   )
   .enablePlugins(JavaAppPackaging)
   .enablePlugins(DockerPlugin)
+
+lazy val integration = (project in file("integration"))
+  .dependsOn(application)
+  .settings(
+    publish / skip := true
+    // test dependencies
+    // libraryDependencies += something % Test,
+  )
 
 // clear screen and banner
 lazy val cls = taskKey[Unit]("Prints a separator")
