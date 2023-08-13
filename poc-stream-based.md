@@ -7,9 +7,11 @@
 
 ## Domain concepts
 
-**Dependency** software dependency defined by the [Maven artifact](https://maven.apache.org/repositories/artifacts.html) format.
+**Dependency** software dependency defined by the [Maven artifact](https://maven.apache.org/repositories/artifacts.html)
+format.
 
-**DependencyLine** text line coming from a file or a topic with a candidate *Dependency* in the maven short format `group:artifact:version`. It needs to be parsed. For instance:
+**DependencyLine** text line coming from a file or a topic with a candidate *Dependency* in the maven short
+format `group:artifact:version`. It needs to be parsed. For instance:
 
     ch.qos.logback:logback-classic:1.4.8
 
@@ -17,10 +19,12 @@
 
 - parse the text line
 - case ok:
-  - create a Dependency object `LocalDependency(g,a,v)`
-- case ko: 
-  - create an InvalidDependency object `InvalidDependency(line,parse-error)`
-  - log the invalid dependency
+    - create a Dependency object `MavenDependency(g,a,v)`
+    - retrieve remote dependency group and artifact
+    - check if remote dependency is newer than project dependency
+- case ko:
+    - create an InvalidDependency object `InvalidDependency(line,parse-error)`
+    - log the invalid dependency
 
 ## Links
 
