@@ -21,8 +21,6 @@ lazy val basicScalacOptions = Seq(
 lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(scalaTest),
   scalacOptions ++= basicScalacOptions
-  // resolvers += // temporal for ZIO snapshots
-  //  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
 )
 
 lazy val `dependency-analyzer` = (project in file("."))
@@ -43,7 +41,6 @@ lazy val `dependency-analyzer` = (project in file("."))
       ulid,
       zio,
       zioConfig,
-      //zioConfigTypesafe,
       zioLogging
     ),
     Test / fork                := true,
