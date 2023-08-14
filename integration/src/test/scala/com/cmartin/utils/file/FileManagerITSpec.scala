@@ -14,7 +14,7 @@ class FileManagerITSpec
   behavior of "FileManager"
 
   it should "retrieve a sequence of text lines from a file" in {
-    val filename = "dep-analyzer/src/it/resources/dependency-list.txt"
+    val filename = "integration/src/test/resources/dependency-list.txt"
     val program  = IOManager.getLinesFromFile(filename)
       .provide(FileManager.layer)
 

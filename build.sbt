@@ -57,7 +57,9 @@ lazy val application = (project in file("application"))
 lazy val integration = (project in file("integration"))
   .dependsOn(application)
   .settings(
-    publish / skip := true
+    name           := "dependency-analyzer-int",
+    publish / skip := true,
+    commonSettings
     // test dependencies
     // libraryDependencies += something % Test,
   )

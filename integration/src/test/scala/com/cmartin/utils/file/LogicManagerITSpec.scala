@@ -14,7 +14,7 @@ class LogicManagerITSpec
   behavior of "LogicManager"
 
   it should "successfully retrieve the dependencies from a file" in {
-    val filename = "dep-analyzer/src/it/resources/deps-1.txt"
+    val filename = "integration/src/test/resources/deps-1.txt"
     val program  = for {
       lines       <- IOManager.getLinesFromFile(filename)
       parsedLines <- LogicManager.parseLines(lines)
@@ -30,7 +30,7 @@ class LogicManagerITSpec
   }
 
   it should "retrieve two collections of dependencies with successes and failures" in {
-    val filename = "dep-analyzer/src/it/resources/deps-2.txt"
+    val filename = "integration/src/test/resources/deps-2.txt"
     val program  = for {
       lines       <- IOManager.getLinesFromFile(filename)
       parsedLines <- LogicManager.parseLines(lines)
