@@ -13,6 +13,14 @@ trait HttpManager {
 
 object HttpManager {
 
+  /** Contains the results of the query to check for updates for local
+    * dependencies.
+    *
+    * @param errors
+    *   Errors occurred in check.
+    * @param gavList
+    *   List of local and remote dependency pairs to check for update.
+    */
   final case class GavResults(errors: Iterable[DomainError], gavList: Iterable[GavPair])
 
   // extract major version number

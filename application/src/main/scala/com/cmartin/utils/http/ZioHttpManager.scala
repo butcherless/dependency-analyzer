@@ -29,7 +29,7 @@ final case class ZioHttpManager(client: HttpClient)
       remoteGav     <- retrieveFirstMajor(remoteGavList, gav)
     } yield GavPair(gav, remoteGav)
 
-  private def makeRequest(gav: Gav) =
+  private def makeRequest(gav: Gav): Request[MavenSearchResult] =
     basicRequest
       .get(uri"${buildUriFromGav(gav)}")
       .response(asJson[MavenSearchResult].getRight)

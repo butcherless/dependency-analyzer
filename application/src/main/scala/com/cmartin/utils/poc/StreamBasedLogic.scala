@@ -29,6 +29,7 @@ object StreamBasedLogic {
     case class RemoteDependency(local: MavenDependency, remote: MavenDependency) extends Dependency
   }
 
+  // alternative regex: (.*):(.*):(.*)
   private val pattern: Regex =
     "(^[a-z][a-z0-9-_.]+):([a-z0-9-_.]+):([0-9]{1,2}\\.[0-9]{1,2}[0-9A-Za-z-.]*)".r
 
