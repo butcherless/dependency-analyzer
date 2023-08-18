@@ -1,5 +1,5 @@
 .DS_Store
-.bloop
+.bloop/
 .bsp
 .gradle
 .idea
