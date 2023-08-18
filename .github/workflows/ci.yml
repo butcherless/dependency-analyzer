@@ -19,7 +19,7 @@ jobs:
     - name: Setup Scala and Java
       uses: coursier/setup-action@v1
       with:
-        jvm: zulu@17 
+        jvm: zulu@20
     - name: init
       run: sbt -v --client update 
       working-directory: ${{env.WORK_DIR}}
@@ -34,6 +34,9 @@ jobs:
       working-directory: ${{env.WORK_DIR}}
     - name: application tests
       run: sbt -v --client application/test
+      working-directory: ${{env.WORK_DIR}}
+    - name: integration tests
+      run: sbt -v --client integration/test
       working-directory: ${{env.WORK_DIR}}
     - name: assembly
       run: sbt -v --client assembly
