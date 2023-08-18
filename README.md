@@ -104,3 +104,8 @@ Lista de tareas previas al caso de uso:
 - Application Modules / ZLayer / Dependency injection
     - https://twitter.com/jdegoes/status/1462758239418867714
     - https://twitter.com/jdegoes/status/1463261876150849547
+ 
+Showing code from src diretory
+
+https://github.com/butcherless/dependency-analyzer/blob/92f6e9487c24712f1067ed27a8439d526cc6ef2e/application/src/main/scala/com/cmartin/utils/DependencyAnalyzerApp.scala#L28
+
