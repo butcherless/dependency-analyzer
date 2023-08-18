@@ -1,8 +1,9 @@
 package com.cmartin.utils.http
 
 import com.cmartin.utils.domain.HttpManager
-import com.cmartin.utils.domain.HttpManager.{retrieveFirstMajor, GavResults}
-import com.cmartin.utils.domain.Model.DomainError.NetworkError
+import com.cmartin.utils.domain.HttpManager.GavResults
+import com.cmartin.utils.domain.HttpManager.retrieveFirstMajor
+import com.cmartin.utils.domain.Model.DomainError.{NetworkError, WebClientError}
 import com.cmartin.utils.domain.Model._
 import com.cmartin.utils.http.ZioHttpManager._
 import just.semver.SemVer
@@ -14,6 +15,18 @@ import zio._
 
 final case class ZioHttpManager(client: HttpClient)
     extends HttpManager {
+
+  def checkResponseCode(response: Response[_]) =
+    if (response.code.isSuccess) ZIO.succeed(response.code)
+    else ZIO.fail(WebClientError(s"Response error code: ${response.code}"))
+
+  val result: IO[DomainError, Unit] = for {
+    response    <- basicRequest.get(uri"dummy-uri").response(asJson[MavenSearchResult]).send(client).mapError(th =>
+                     WebClientError(th.getMessage())
+                   )
+    checkedCode <- checkResponseCode(response)
+    x           <- ZIO.fromEither(response.body).mapError(th => WebClientError(th.getMessage()))
+  } yield ()
 
   override def checkDependencies(gavList: Iterable[Gav]): UIO[GavResults] =
     ZIO.partitionPar(gavList)(getDependency).withParallelism(4)
