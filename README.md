@@ -107,5 +107,5 @@ Lista de tareas previas al caso de uso:
  
 Showing code from src diretory
 
-https://github.com/butcherless/dependency-analyzer/blob/92f6e9487c24712f1067ed27a8439d526cc6ef2e/application/src/main/scala/com/cmartin/utils/DependencyAnalyzerApp.scala#L28
+https://github.com/butcherless/dependency-analyzer/blob/92f6e9487c24712f1067ed27a8439d526cc6ef2e/application/src/main/scala/com/cmartin/utils/DependencyAnalyzerApp.scala#L28-L48
 
