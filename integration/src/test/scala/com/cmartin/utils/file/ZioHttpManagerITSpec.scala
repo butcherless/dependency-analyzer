@@ -6,8 +6,9 @@ import com.cmartin.utils.http.ZioHttpManager
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.client4.httpclient.zio.HttpClientZioBackend
-import zio.Runtime.{default => runtime}
-import zio.{Unsafe, ZLayer}
+import zio.ZLayer
+
+import TestUtils.{run => unsafeRun}
 
 class ZioHttpManagerITSpec
     extends AnyFlatSpec with Matchers {
@@ -28,9 +29,8 @@ class ZioHttpManagerITSpec
 
     // when
     val program = HttpManager.checkDependencies(deps)
-    val results = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(applicationLayer)).getOrThrowFiberFailure()
-    }
+
+    val results = unsafeRun(program.provide(applicationLayer))
 
     info(s"errors: ${results.errors}")
     info(s"(local,remote): ${results.gavList}")
@@ -51,9 +51,7 @@ class ZioHttpManagerITSpec
     // when
     val program = HttpManager.checkDependencies(deps)
 
-    val results = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(applicationLayer)).getOrThrowFiberFailure()
-    }
+    val results = unsafeRun(program.provide(applicationLayer))
 
     info(s"errors: ${results.errors}")
     info(s"(local,remote): ${results.gavList}")
@@ -70,9 +68,7 @@ class ZioHttpManagerITSpec
     // when
     val program = HttpManager.checkDependencies(deps)
 
-    val results = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(applicationLayer)).getOrThrowFiberFailure()
-    }
+    val results = unsafeRun(program.provide(applicationLayer))
 
     info(s"errors: ${results.errors}")
     info(s"(local,remote): ${results.gavList}")

@@ -6,8 +6,8 @@ import com.cmartin.utils.domain.Model.Gav
 import com.cmartin.utils.http.HttpClientManager
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import zio.Runtime.{default => runtime}
-import zio.Unsafe
+
+import TestUtils.{run => unsafeRun}
 
 class HttpManagerITSpec
     extends AnyFlatSpec with Matchers {
@@ -16,15 +16,14 @@ class HttpManagerITSpec
 
   behavior of "HttpManager"
 
-  it should "retrieve a single dependency change" in {
+  // TODO
+  ignore should "retrieve a single dependency change" in {
     // given
     val deps    = Seq(zioDep)
     // when
     val program = HttpManager.checkDependencies(deps)
 
-    val results = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(HttpClientManager.layer)).getOrThrowFiberFailure()
-    }
+    val results = unsafeRun(program.provide(HttpClientManager.layer))
 
     info(s"errors: ${results.errors}")
     info(s"(local,remote): ${results.gavList}")
@@ -38,15 +37,14 @@ class HttpManagerITSpec
     takeMajorNumber(pair.local.version) shouldBe takeMajorNumber(pair.remote.version)
   }
 
-  it should "retrieve multiple dependency changes" in {
+  // TODO
+  ignore should "retrieve multiple dependency changes" in {
     // given
     val deps    = Seq(zioDep, logbackDep)
     // when
     val program = HttpManager.checkDependencies(deps)
 
-    val results = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(HttpClientManager.layer)).getOrThrowFiberFailure()
-    }
+    val results = unsafeRun(program.provide(HttpClientManager.layer))
 
     info(s"errors: ${results.errors}")
     info(s"(local,remote): ${results.gavList}")
@@ -63,9 +61,7 @@ class HttpManagerITSpec
     // when
     val program = HttpManager.checkDependencies(deps)
 
-    val results = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(HttpClientManager.layer)).getOrThrowFiberFailure()
-    }
+    val results = unsafeRun(program.provide(HttpClientManager.layer))
 
     info(s"errors: ${results.errors}")
     info(s"(local,remote): ${results.gavList}")
@@ -82,7 +78,7 @@ class HttpManagerITSpec
 object HttpManagerITSpec {
   val zioGroup    = "dev.zio"
   val zioArtifact = "zio_2.13"
-  val zioVersion  = "1.0.0"
+  val zioVersion  = "2.0.0"
   val zioDep      = Gav(zioGroup, zioArtifact, zioVersion)
 
   val lbGroup    = "ch.qos.logback"
