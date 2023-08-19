@@ -1,5 +1,3 @@
 package com.cmartin.utils.poc
 
-object KafkaPoc {
-  
-}
+object KafkaPoc {}
