@@ -105,7 +105,31 @@ Lista de tareas previas al caso de uso:
     - https://twitter.com/jdegoes/status/1462758239418867714
     - https://twitter.com/jdegoes/status/1463261876150849547
  
-Showing code from src diretory
 
-https://github.com/butcherless/dependency-analyzer/blob/92f6e9487c24712f1067ed27a8439d526cc6ef2e/application/src/main/scala/com/cmartin/utils/DependencyAnalyzerApp.scala#L28-L48
+## Stream based solution - Kafka
 
+https://github.com/zio/zio-kafka
+
+Confluentinc version: `latest`
+
+Kafka version: `3.4.1`
+
+Start Kafka:
+
+    docker-compose -f docker-kafka/docker-compose.yml -d
+
+Stop Kafka
+
+    docker-compose -f docker-kafka/docker-compose.yml down
+
+Show Kafka logs
+
+    docker-compose -f docker-kafka/docker-compose.yml logs -f
+
+List topics:
+
+    bin/kafka-topics.sh --bootstrap-server localhost:29092 --list
+
+Consume topic random
+
+    bin/kafka-console-consumer.sh --bootstrap-server localhost:29092 --topic random --from-beginning

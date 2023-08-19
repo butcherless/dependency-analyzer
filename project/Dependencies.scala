@@ -2,7 +2,9 @@ import sbt._
 
 object Dependencies {
 
+  //
   // production code
+  //
   lazy val typesafeConfig = "com.typesafe"   % "config"          % Versions.config
   lazy val json4s         = "org.json4s"    %% "json4s-native"   % Versions.json4s
   lazy val justSemver     = "io.kevinlee"   %% "just-semver"     % Versions.justSemver
@@ -23,7 +25,11 @@ object Dependencies {
   // lazy val zioConfigTypesafe = "dev.zio" %% "zio-config-typesafe" % Versions.zioConfig
   lazy val zioLogging = "dev.zio" %% "zio-logging-slf4j" % Versions.zioLogging
   lazy val zioPrelude = "dev.zio" %% "zio-prelude"       % Versions.zioPrelude
+  lazy val zioKafka   = "dev.zio" %% "zio-kafka"         % Versions.zioKafka
 
+  //
   // testing code
-  lazy val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalatest % "test"
+  //
+  lazy val scalaTest    = "org.scalatest" %% "scalatest"         % Versions.scalatest % Test
+  lazy val zioKafkaTest = "dev.zio"       %% "zio-kafka-testkit" % Versions.zioKafka  % Test
 }

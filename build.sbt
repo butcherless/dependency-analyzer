@@ -39,6 +39,7 @@ lazy val application = (project in file("application"))
       ulid,
       zio,
       zioConfig,
+      zioKafka,
       zioLogging
     ),
     Test / fork                := true,
