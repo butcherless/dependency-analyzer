@@ -4,13 +4,19 @@ import zio.ZIOAppDefault
 import zio._
 import zio.kafka.producer.Producer
 import zio.kafka.serde._
-import zio.stream.ZStream
+import zio.stream.{UStream, ZStream}
 
 import java.util.UUID
 import zio.kafka.producer.ProducerSettings
+import org.apache.kafka.clients.producer.ProducerRecord
 
 object KafkaProducerApp
     extends ZIOAppDefault {
+
+  val KAFKA_TOPIC                                             = "my-event-topic"
+  val events: UStream[ProducerRecord[Long, KafkaPoc.MyEvent]] = ???
+  val eventProducer                                           =
+    events.via(Producer.produceAll(KafkaPoc.MyEventSerde.key, KafkaPoc.MyEventSerde.value))
 
   def buildValue(value: String) =
     s"""{
