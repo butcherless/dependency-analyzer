@@ -88,6 +88,7 @@ addCommandAlias("xdeplist", "dependencyList/toFile /tmp/dep-analyzer.log -f")
 ThisBuild / assemblyMergeStrategy := {
   case "META-INF/io.netty.versions.properties" => MergeStrategy.discard
   case "module-info.class"                     => MergeStrategy.discard
+  case "META-INF/versions/9/module-info.class" => MergeStrategy.discard
   case x                                       =>
     val oldStrategy = assemblyMergeStrategy.value
     oldStrategy(x)
