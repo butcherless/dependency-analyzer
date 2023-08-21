@@ -3,11 +3,13 @@ package com.cmartin.utils
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.capabilities.zio.ZioStreams
-import sttp.client4.{WebSocketStreamBackend, _}
+import sttp.client4.WebSocketStreamBackend
+import sttp.client4._
 import sttp.client4.httpclient.zio.HttpClientZioBackend
 import sttp.model.StatusCode
 import zio.Runtime.{default => runtime}
-import zio.{Task, _}
+import zio.Task
+import zio._
 
 class SttpSpec
     extends AnyFlatSpec

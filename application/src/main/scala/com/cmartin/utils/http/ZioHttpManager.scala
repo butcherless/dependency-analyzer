@@ -69,13 +69,14 @@ object ZioHttpManager {
     Gav(group = a.g, artifact = a.a, parsedVersion)
   }
   val scheme                        = "https"
-  val searchPath                    = "search.maven.org/solrsearch/select"
+  val host                          = "search.maven.org"
+  val path                          = "solrsearch/select"
   val resultSize                    = 10
 
   /* curl -s "https://search.maven.org/solrsearch/select?q=g:dev.zio+AND+a:zio_2.13&wt=json" | jq
    */
   def buildUriFromGav(gav: Gav): String =
-    s"$scheme://$searchPath?q=g:${gav.group}+AND+a:${gav.artifact}&wt=json"
+    s"$scheme://$host/$path?q=g:${gav.group}+AND+a:${gav.artifact}&wt=json"
 
   val layer =
     ZLayer.fromFunction(client => ZioHttpManager(client))
