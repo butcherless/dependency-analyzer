@@ -116,7 +116,7 @@ Kafka version: `3.4.1`
 
 Start Kafka:
 
-    docker-compose -f docker-kafka/docker-compose.yml -d
+    docker-compose -f docker-kafka/docker-compose.yml up -d
 
 Stop Kafka
 
