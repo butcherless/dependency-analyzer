@@ -1,56 +1,78 @@
 package com.cmartin.utils.poc
 
+import org.apache.kafka.clients.producer.ProducerRecord
 import zio.ZIOAppDefault
 import zio._
 import zio.kafka.producer.Producer
-import zio.kafka.serde._
-import zio.stream.{UStream, ZStream}
-
-import java.util.UUID
 import zio.kafka.producer.ProducerSettings
-import org.apache.kafka.clients.producer.ProducerRecord
+import zio.stream.ZStream
+
+import java.time.Instant
+
+import KafkaPoc._
+import org.apache.kafka.clients.producer.RecordMetadata
 
 object KafkaProducerApp
     extends ZIOAppDefault {
 
-  val KAFKA_TOPIC                                             = "my-event-topic"
-  val events: UStream[ProducerRecord[Long, KafkaPoc.MyEvent]] = ???
-  val eventProducer                                           =
-    events.via(Producer.produceAll(KafkaPoc.MyEventSerde.key, KafkaPoc.MyEventSerde.value))
+  val KAFKA_TOPIC = "dependency-line-topic"
 
-  def buildValue(value: String) =
-    s"""{
-        "value" : "$value",
-        "id" : "${UUID.randomUUID()}"
-    }""".stripMargin
+  def buildValue(projectName: String, line: String, time: Instant): DependencyLine =
+    KafkaPoc.DependencyLine(projectName, line, time)
 
-  val producer: ZStream[Producer, Throwable, Nothing] =
-    ZStream
-      .repeatZIO(Random.nextIntBetween(0, Int.MaxValue))
-      .schedule(Schedule.fixed(250.milliseconds))
-      .mapZIO { random =>
-        Producer.produce[Any, Long, String](
-          topic = "random",
-          key = random % 4,
-          value = buildValue(random.toString),
-          keySerializer = Serde.long,
-          valueSerializer = Serde.string
-        )
+  def buildRecord[K, V](topic: String, key: K, depLine: V) =
+    new ProducerRecord(
+      topic,
+      key,
+      depLine
+    )
+
+  def log10PercentMetadata(metadata: RecordMetadata): UIO[Unit] =
+    if (metadata.timestamp() % 100 < 5)
+      ZIO.log(s"[topic=${metadata.topic},partition=${metadata.partition},offset=${metadata.offset}]")
+    else ZIO.unit
+
+  val filename     = "application/src/test/resources/dep-list.log"
+  val PROJECT_NAME = "dependency-analyzer"
+  val ZIO_LINE     = "dev.zio:zio:2.0.16"
+  val lineStream   =
+    StreamBasedLogic.getLinesFromFilename(filename)
+      .tap(line => ZIO.log(s"line $line"))
+      .mapZIO(ZIO.succeed(_) zip Clock.currentDateTime)
+      .map { case (line, time) =>
+        buildRecord(KAFKA_TOPIC, PROJECT_NAME, buildValue(PROJECT_NAME, line, time.toInstant))
       }
-      .tap(a => ZIO.log(s"element: $a"))
-      .drain
+      .tap(record => ZIO.log(s"record $record"))
+      .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
+      .tap(log10PercentMetadata)
+
+  val EVENT_COUNT: Int        = 100
+  val bootstrapServer: String = "localhost:29092"
+  val dummyProducer           = // : ZStream[Producer, Throwable, Nothing] =
+    ZStream
+      .fromSchedule(Schedule.recurs(EVENT_COUNT) && Schedule.fixed(250.milliseconds))
+      .mapZIO(_ => Clock.currentDateTime)
+      .map(time => (PROJECT_NAME, time))
+      .map { case (projectName, time) =>
+        buildRecord(KAFKA_TOPIC, projectName, buildValue(projectName, ZIO_LINE, time.toInstant))
+      }
+      .tap(record => ZIO.log(s"record $record"))
+      .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
+      .tap(log10PercentMetadata)
+  // .drain
 
   def producerLayer =
     ZLayer.scoped(
       Producer.make(
-        settings = ProducerSettings(List("localhost:29092"))
+        settings = ProducerSettings(List(bootstrapServer))
       )
     )
 
   def run =
     for {
       _ <- ZIO.log("kafka producer")
-      a <- producer.runDrain.provide(producerLayer)
+      // a <- dummyProducer.runDrain.provide(producerLayer)
+      _ <- lineStream.runDrain.provide(producerLayer)
     } yield ()
 
 }

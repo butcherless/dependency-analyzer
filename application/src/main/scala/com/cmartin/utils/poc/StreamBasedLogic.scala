@@ -7,6 +7,7 @@ import zio.{Task, UIO, ZIO}
 import scala.util.matching.Regex
 
 object StreamBasedLogic {
+
   sealed trait Dependency
 
   object Dependency {
