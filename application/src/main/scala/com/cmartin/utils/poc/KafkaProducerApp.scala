@@ -42,7 +42,7 @@ object KafkaProducerApp
       .map { case (line, time) =>
         buildRecord(KAFKA_TOPIC, PROJECT_NAME, buildValue(PROJECT_NAME, line, time.toInstant))
       }
-      .tap(record => ZIO.log(s"record $record"))
+      .tap(record => ZIO.log(s"$record"))
       .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
       .tap(log10PercentMetadata)
 
@@ -61,7 +61,7 @@ object KafkaProducerApp
       .tap(log10PercentMetadata)
   // .drain
 
-  def producerLayer =
+  private def producerLayer =
     ZLayer.scoped(
       Producer.make(
         settings = ProducerSettings(List(bootstrapServer))
