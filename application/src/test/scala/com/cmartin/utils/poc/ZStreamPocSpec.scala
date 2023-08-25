@@ -90,8 +90,9 @@ class ZStreamPocSpec
 
   it should "TODO..." in {
     val EVENT_COUNT = 10
+    val schedule    = Schedule.recurs(EVENT_COUNT) && Schedule.fixed(100.milliseconds)
     val stream      =
-      ZStream.fromSchedule(Schedule.recurs(EVENT_COUNT) && Schedule.fixed(100.milliseconds))
+      ZStream.fromSchedule(schedule)
         .tap(a => Console.printLine(s"element: $a"))
 
     run(stream.runDrain)
