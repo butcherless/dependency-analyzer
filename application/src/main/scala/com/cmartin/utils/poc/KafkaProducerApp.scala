@@ -51,16 +51,12 @@ object KafkaProducerApp
     } yield ()
 
   private def processMavenDependency(dep: MavenDependency) =
-    for {
-      _      <- ZIO.log(s"valid dependency: $dep")
-      record <- ZIO.succeed(buildRecord(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, dep))
-    } yield record
+    ZIO.log(s"valid dependency: $dep") *>
+      ZIO.succeed(buildRecord(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, dep))
 
   private def processInvalidDependency(dep: InvalidDependency) =
-    for {
-      _      <- ZIO.log(s"invalid dependency: $dep")
-      record <- ZIO.succeed(buildRecord(INVALID_LINE_TOPIC, PROJECT_NAME, dep))
-    } yield record
+    ZIO.log(s"invalid dependency: $dep") *>
+      ZIO.succeed(buildRecord(INVALID_LINE_TOPIC, PROJECT_NAME, dep))
 
   private val mainProgram =
     StreamBasedLogic.getLinesFromFilename(filename)
