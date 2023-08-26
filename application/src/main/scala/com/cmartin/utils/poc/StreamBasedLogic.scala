@@ -1,14 +1,19 @@
 package com.cmartin.utils.poc
 
 import com.cmartin.utils.poc.StreamBasedLogic.Dependency._
+import org.apache.kafka.clients.producer.{ProducerRecord, RecordMetadata}
 import zio.json._
 import zio.kafka.serde.Serde
 import zio.stream.ZStream
-import zio.{UIO, ZIO}
+import zio.{Random, UIO, ZIO}
 
 import scala.util.matching.Regex
 
 object StreamBasedLogic {
+
+  // raw"(^[a-z][a-z0-9-_.]+):([a-z0-9-_.]+):([0-9]{1,2}\\.[0-9]{1,2}[0-9A-Za-z-.]*)".r
+  private val pattern: Regex =
+    "(^[^:A-Z]+):([^:A-Z]+):([^:a-z]+$)".r
 
   sealed trait Dependency extends Product with Serializable
 
@@ -70,11 +75,6 @@ object StreamBasedLogic {
     case class RemoteDependency(local: MavenDependency, remote: MavenDependency) extends Dependency
   }
 
-  // alternative regex: (.*):(.*):(.*)
-  // raw"(^[a-z][a-z0-9-_.]+):([a-z0-9-_.]+):([0-9]{1,2}\\.[0-9]{1,2}[0-9A-Za-z-.]*)".r
-  private val pattern: Regex =
-    "(^[^:A-Z]+):([^:A-Z]+):([^:a-z]+$)".r
-
   def getLinesFromFilename(filename: String): ZStream[Any, Throwable, String] =
     ZStream.fromIteratorScoped(
       ZIO.fromAutoCloseable(
@@ -101,6 +101,38 @@ object StreamBasedLogic {
       case _                        => false
     }
 
+  def buildRecord[K, V](topic: String, key: K, value: V) =
+    new ProducerRecord(
+      topic,
+      key,
+      value
+    )
+
+  case class MavenDependencyRequest(topic: String, projectName: String, dependency: MavenDependency)
+  case class InvalidDependencyRequest(topic: String, projectName: String, dependency: InvalidDependency)
+
+  def processMavenDependency(request: MavenDependencyRequest): UIO[ProducerRecord[String, MavenDependency]] =
+    ZIO.log(s"valid dependency: ${request.dependency}") *>
+      ZIO.succeed(buildRecord(request.topic, request.projectName, request.dependency))
+
+  def processInvalidDependency(request: InvalidDependencyRequest): UIO[ProducerRecord[String, InvalidDependency]] =
+    ZIO.log(s"invalid dependency: ${request.dependency}") *>
+      ZIO.succeed(buildRecord(request.topic, request.projectName, request.dependency))
+
+  def logMetadata(metadata: RecordMetadata)(probability: Double = 0.05): ZIO[Any, Nothing, Unit] =
+    for {
+      number <- Random.nextDouble
+      _      <- ZIO.when(number <= probability)(
+                  ZIO.log(buildLogLine(metadata))
+                )
+    } yield ()
+  def logObject[O](o: O): UIO[Unit]                                                              =
+    ZIO.log(s"$o")
+
+  private def buildLogLine(metadata: RecordMetadata): String =
+    s"[topic=${metadata.topic},partition=${metadata.partition},offset=${metadata.offset},timestamp=${metadata.timestamp}]"
+
+  // TODO remove after researching
   private def processMavenDep(dep: MavenDependency): UIO[MavenDependency] =
     ZIO.log(s"valid dependency: $dep") *> ZIO.succeed(dep)
 

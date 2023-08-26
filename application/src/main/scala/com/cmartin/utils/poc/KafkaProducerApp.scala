@@ -8,7 +8,6 @@ import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{
   MavenDependencySerde
 }
 import com.cmartin.utils.poc.StreamBasedLogic._
-import org.apache.kafka.clients.producer.{ProducerRecord, RecordMetadata}
 import zio.{ZIOAppDefault, _}
 import zio.kafka.producer.{Producer, ProducerSettings}
 import zio.stream.ZStream
@@ -18,42 +17,16 @@ import java.time.Instant
 object KafkaProducerApp
     extends ZIOAppDefault {
 
-  val bootstrapServer: String = "localhost:29092"
-  val DEPENDENCY_LINE_TOPIC   = "dependency-line-topic"
-  val INVALID_LINE_TOPIC      = "invalid-line-topic"
-  val filename                = "application/src/test/resources/dep-list.log"
-  val PROJECT_NAME            = "dependency-analyzer"
-  val ZIO_LINE                = "dev.zio:zio:2.0.16"
-  val EVENT_COUNT: Int        = 100
+  private val bootstrapServer: String = "localhost:29092"
+  private val DEPENDENCY_LINE_TOPIC   = "dependency-line-topic"
+  private val INVALID_LINE_TOPIC      = "invalid-line-topic"
+  private val filename                = "application/src/test/resources/dep-list.log"
+  private val PROJECT_NAME            = "dependency-analyzer"
+  private val ZIO_LINE                = "dev.zio:zio:2.0.16"
+  private val EVENT_COUNT: Int        = 100
 
-  def buildValue(projectName: String, line: String, time: Instant): DependencyLine =
+  private def buildValue(projectName: String, line: String, time: Instant): DependencyLine =
     KafkaPoc.DependencyLine(projectName, line, time)
-
-  def buildRecord[K, V](topic: String, key: K, value: V) =
-    new ProducerRecord(
-      topic,
-      key,
-      value
-    )
-
-  def buildLogLine(metadata: RecordMetadata): String =
-    s"[topic=${metadata.topic},partition=${metadata.partition},offset=${metadata.offset}]"
-
-  def logMetadata(metadata: RecordMetadata)(probability: Double = 0.05): ZIO[Any, Nothing, Unit] =
-    for {
-      number <- Random.nextDouble
-      _      <- ZIO.when(number <= probability)(
-                  ZIO.log(buildLogLine(metadata))
-                )
-    } yield ()
-
-  private def processMavenDependency(dep: MavenDependency) =
-    ZIO.log(s"valid dependency: $dep") *>
-      ZIO.succeed(buildRecord(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, dep))
-
-  private def processInvalidDependency(dep: InvalidDependency) =
-    ZIO.log(s"invalid dependency: $dep") *>
-      ZIO.succeed(buildRecord(INVALID_LINE_TOPIC, PROJECT_NAME, dep))
 
   private val mainProgram =
     StreamBasedLogic.getLinesFromFilename(filename)
@@ -61,13 +34,20 @@ object KafkaProducerApp
       .partition(isValidDep)
       .flatMap { case (validStream, invalidStream) =>
         ZStream.mergeAll(2)(
+          // valid line case
           validStream.collectType[MavenDependency]
-            .mapZIO(processMavenDependency)
-            .tap(record => ZIO.log(s"$record"))
-            .via(Producer.produceAll(MavenDependencySerde.key, MavenDependencySerde.value)),
+            .mapZIO(dep =>
+              processMavenDependency(MavenDependencyRequest(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, dep))
+            )
+            .tap(logObject)
+            .via(Producer.produceAll(MavenDependencySerde.key, MavenDependencySerde.value))
+            .tap(logMetadata(_)(0.10)),
+          // invalid line case
           invalidStream.collectType[InvalidDependency]
-            .mapZIO(processInvalidDependency)
-            .tap(record => ZIO.log(s"$record"))
+            .mapZIO(dep =>
+              processInvalidDependency(InvalidDependencyRequest(INVALID_LINE_TOPIC, PROJECT_NAME, dep))
+            )
+            .tap(logObject)
             .via(Producer.produceAll(InvalidDependencySerde.key, InvalidDependencySerde.value))
         ).runDrain
       }
