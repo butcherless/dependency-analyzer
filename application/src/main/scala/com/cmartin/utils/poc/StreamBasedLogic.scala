@@ -1,16 +1,16 @@
 package com.cmartin.utils.poc
 
 import com.cmartin.utils.poc.StreamBasedLogic.Dependency._
-import zio.stream.ZStream
-import zio.{Task, UIO, ZIO}
-
-import scala.util.matching.Regex
 import zio.json._
 import zio.kafka.serde.Serde
+import zio.stream.ZStream
+import zio.{UIO, ZIO}
+
+import scala.util.matching.Regex
 
 object StreamBasedLogic {
 
-  sealed trait Dependency
+  sealed trait Dependency extends Product with Serializable
 
   object Dependency {
     case class MavenDependency(g: String, a: String, v: String) extends Dependency
@@ -71,8 +71,9 @@ object StreamBasedLogic {
   }
 
   // alternative regex: (.*):(.*):(.*)
+  // raw"(^[a-z][a-z0-9-_.]+):([a-z0-9-_.]+):([0-9]{1,2}\\.[0-9]{1,2}[0-9A-Za-z-.]*)".r
   private val pattern: Regex =
-    "(^[a-z][a-z0-9-_.]+):([a-z0-9-_.]+):([0-9]{1,2}\\.[0-9]{1,2}[0-9A-Za-z-.]*)".r
+    "(^[^:A-Z]+):([^:A-Z]+):([^:a-z]+$)".r
 
   def getLinesFromFilename(filename: String): ZStream[Any, Throwable, String] =
     ZStream.fromIteratorScoped(
@@ -81,15 +82,16 @@ object StreamBasedLogic {
       ).map(_.getLines())
     )
 
-  def parseDepLine(line: String): Task[Dependency] = {
-    def extractDependency(iterator: Iterator[Regex.Match]) =
-      if (iterator.hasNext) ZIO.succeed(MavenDependency.fromRegexMatch(iterator.next()))
-      else ZIO.succeed(InvalidDependency(line, "regex does not match"))
+  def parseDepLine(line: String): UIO[Dependency] = {
+    def extract(line: String): UIO[Dependency] =
+      line match {
+        case pattern(g, a, v) => ZIO.succeed(MavenDependency(g, a, v))
+        case _                => ZIO.succeed(InvalidDependency(line, "regex does not match"))
+      }
 
     for {
-      _             <- ZIO.log(s"parsing line: $line")
-      matchIterator <- ZIO.succeed(pattern.findAllMatchIn(line))
-      result        <- extractDependency(matchIterator)
+      _      <- ZIO.log(s"parsing line: $line")
+      result <- extract(line)
     } yield result
   }
 

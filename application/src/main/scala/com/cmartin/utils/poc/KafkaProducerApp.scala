@@ -1,14 +1,6 @@
 package com.cmartin.utils.poc
 
-import org.apache.kafka.clients.producer.ProducerRecord
-import zio.ZIOAppDefault
-import zio._
-import zio.kafka.producer.Producer
-import zio.kafka.producer.ProducerSettings
-import zio.stream.ZStream
-
-import java.time.Instant
-import KafkaPoc._
+import com.cmartin.utils.poc.KafkaPoc._
 import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{
   InvalidDependency,
   InvalidDependencySerde,
@@ -16,7 +8,12 @@ import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{
   MavenDependencySerde
 }
 import com.cmartin.utils.poc.StreamBasedLogic._
-import org.apache.kafka.clients.producer.RecordMetadata
+import org.apache.kafka.clients.producer.{ProducerRecord, RecordMetadata}
+import zio.{ZIOAppDefault, _}
+import zio.kafka.producer.{Producer, ProducerSettings}
+import zio.stream.ZStream
+
+import java.time.Instant
 
 object KafkaProducerApp
     extends ZIOAppDefault {
@@ -75,17 +72,6 @@ object KafkaProducerApp
         ).runDrain
       }
 
-  /*
-      .mapZIO(ZIO.succeed(_) zip Clock.instant)
-      .map { case (line, time) =>
-        buildRecord(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, buildValue(PROJECT_NAME, line, time))
-      }
-      .tap(record => ZIO.log(s"$record"))
-      .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
-      .tap(logMetadata(_)())
-
-   */
-
   // TODO: stream for researching
   val dummyProducer         =
     ZStream
@@ -107,12 +93,19 @@ object KafkaProducerApp
 
   def run =
     for {
-      _ <- ZIO.log("kafka producer")
+      _ <- ZIO.log("kafka producer application")
       _ <- ZIO.scoped(mainProgram)
              .provide(producerLayer)
-      // _ <- res1.runDrain.provide(producerLayer)
-      // a <- dummyProducer.runDrain.provide(producerLayer)
-      // .provide(producerLayer)
     } yield ()
 
 }
+
+/*
+    .mapZIO(ZIO.succeed(_) zip Clock.instant)
+    .map { case (line, time) =>
+      buildRecord(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, buildValue(PROJECT_NAME, line, time))
+    }
+    .tap(record => ZIO.log(s"$record"))
+    .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
+    .tap(logMetadata(_)())
+ */

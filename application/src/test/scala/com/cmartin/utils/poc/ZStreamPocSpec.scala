@@ -83,11 +83,6 @@ class ZStreamPocSpec
     run(ZIO.scoped(program))
   }
 
-  private def run[E, A](program: ZIO[Any, E, A]) =
-    Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program).getOrThrowFiberFailure()
-    }
-
   it should "TODO..." in {
     val EVENT_COUNT = 10
     val schedule    = Schedule.recurs(EVENT_COUNT) && Schedule.fixed(100.milliseconds)
@@ -97,4 +92,10 @@ class ZStreamPocSpec
 
     run(stream.runDrain)
   }
+
+  private def run[E, A](program: ZIO[Any, E, A]) =
+    Unsafe.unsafe { implicit u =>
+      runtime.unsafe.run(program).getOrThrowFiberFailure()
+    }
+
 }
