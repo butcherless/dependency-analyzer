@@ -27,7 +27,6 @@ object KafkaPoc {
         ZIO.fromEither(s.fromJson[DependencyLine])
           .mapError(e => new RuntimeException(e))
       )(r => ZIO.succeed(r.toJson))
-
   }
 
   case class MyEvent(id: UUID, number: Long, timestamp: Instant)

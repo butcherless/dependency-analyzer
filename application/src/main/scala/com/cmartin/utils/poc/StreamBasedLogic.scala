@@ -5,6 +5,8 @@ import zio.stream.ZStream
 import zio.{Task, UIO, ZIO}
 
 import scala.util.matching.Regex
+import zio.json._
+import zio.kafka.serde.Serde
 
 object StreamBasedLogic {
 
@@ -21,9 +23,47 @@ object StreamBasedLogic {
           regexMatch.group(3)  // version
         )
 
+      implicit val encoder: JsonEncoder[MavenDependency] =
+        DeriveJsonEncoder.gen[MavenDependency]
+
+      implicit val decoder: JsonDecoder[MavenDependency] =
+        DeriveJsonDecoder.gen[MavenDependency]
+
+    }
+
+    object MavenDependencySerde {
+      val key: Serde[Any, String] =
+        Serde.string
+
+      val value: Serde[Any, MavenDependency] =
+        Serde.string.inmapM[Any, MavenDependency](s =>
+          ZIO.fromEither(s.fromJson[MavenDependency])
+            .mapError(e => new RuntimeException(e))
+        )(r => ZIO.succeed(r.toJson))
     }
 
     case class InvalidDependency(line: String, parseError: String) extends Dependency
+
+    /** Json codecs for the InvalidDependency class
+      */
+    object InvalidDependency {
+      implicit val encoder: JsonEncoder[InvalidDependency] =
+        DeriveJsonEncoder.gen[InvalidDependency]
+
+      implicit val decoder: JsonDecoder[InvalidDependency] =
+        DeriveJsonDecoder.gen[InvalidDependency]
+    }
+
+    object InvalidDependencySerde {
+      val key: Serde[Any, String] =
+        Serde.string
+
+      val value: Serde[Any, InvalidDependency] =
+        Serde.string.inmapM[Any, InvalidDependency](s =>
+          ZIO.fromEither(s.fromJson[InvalidDependency])
+            .mapError(e => new RuntimeException(e))
+        )(r => ZIO.succeed(r.toJson))
+    }
 
     case class MissingRemoteDependency(dep: MavenDependency, error: String) extends Dependency
 
