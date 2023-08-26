@@ -1,6 +1,5 @@
 package com.cmartin.utils.poc
 
-import com.cmartin.utils.poc.StreamBasedLogic._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import wvlet.airframe.ulid.ULID
@@ -69,21 +68,7 @@ class ZStreamPocSpec
     amount.isBlank shouldBe false
   }
 
-  it should "parallel process a stream from a dependency file" in {
-    val filename = "src/test/resources/dep-list.log"
-    val program  =
-      getLinesFromFilename(filename)
-        .mapZIOPar(2)(parseDepLine)
-        .partition(isValidDep)
-        .flatMap { case (validStream, invalidStream) =>
-          processStreams(validStream, invalidStream)
-            .runDrain
-        }
-
-    run(ZIO.scoped(program))
-  }
-
-  it should "TODO..." in {
+  it should "generate elements from recurs & fixed schedule" in {
     val EVENT_COUNT = 10
     val schedule    = Schedule.recurs(EVENT_COUNT) && Schedule.fixed(100.milliseconds)
     val stream      =

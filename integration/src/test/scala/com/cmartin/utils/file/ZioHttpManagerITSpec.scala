@@ -6,18 +6,18 @@ import com.cmartin.utils.http.ZioHttpManager
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.client4.httpclient.zio.HttpClientZioBackend
-import zio.ZLayer
-
+import zio.{TaskLayer, ZLayer}
 import TestUtils.{run => unsafeRun}
 
 class ZioHttpManagerITSpec
-    extends AnyFlatSpec with Matchers {
+    extends AnyFlatSpec
+    with Matchers {
 
   import HttpManagerITSpec._
 
   behavior of "ZioHttpManager"
 
-  val applicationLayer =
+  val applicationLayer: TaskLayer[HttpManager] =
     ZLayer.make[HttpManager](
       ZLayer.scoped(HttpClientZioBackend.scoped()),
       ZioHttpManager.layer
