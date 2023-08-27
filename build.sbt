@@ -61,8 +61,6 @@ lazy val integration = (project in file("integration"))
     name           := "dependency-analyzer-int",
     publish / skip := true,
     commonSettings
-    // test dependencies
-    // libraryDependencies += something % Test,
   )
 
 // clear screen and banner
