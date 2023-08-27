@@ -16,16 +16,16 @@ import zio._
 final case class ZioHttpManager(client: HttpClient)
     extends HttpManager {
 
-  def checkResponseCode(response: Response[_]) =
+  private def checkResponseCode(response: Response[_]) =
     if (response.code.isSuccess) ZIO.succeed(response.code)
     else ZIO.fail(WebClientError(s"Response error code: ${response.code}"))
 
   val result: IO[DomainError, Unit] = for {
-    response    <- basicRequest.get(uri"dummy-uri").response(asJson[MavenSearchResult]).send(client).mapError(th =>
-                     WebClientError(th.getMessage())
-                   )
-    checkedCode <- checkResponseCode(response)
-    x           <- ZIO.fromEither(response.body).mapError(th => WebClientError(th.getMessage()))
+    response <- basicRequest.get(uri"dummy-uri").response(asJson[MavenSearchResult]).send(client).mapError(th =>
+                  WebClientError(th.getMessage)
+                )
+    _        <- checkResponseCode(response)
+    _        <- ZIO.fromEither(response.body).mapError(th => WebClientError(th.getMessage))
   } yield ()
 
   override def checkDependencies(gavList: Iterable[Gav]): UIO[GavResults] =
@@ -63,21 +63,20 @@ object ZioHttpManager {
 
   type HttpClient = WebSocketStreamBackend[Task, ZioStreams]
 
-  def viewToModel(a: Artifact): Gav = {
+  private def viewToModel(a: Artifact): Gav = {
     val parsedVersion = SemVer.parse(a.latestVersion).fold(_.toString, render)
 
     Gav(group = a.g, artifact = a.a, parsedVersion)
   }
-  val scheme                        = "https"
-  val host                          = "search.maven.org"
-  val path                          = "solrsearch/select"
-  val resultSize                    = 10
+  val scheme                                = "https"
+  private val host                          = "search.maven.org"
+  val path                                  = "solrsearch/select"
 
   /* curl -s "https://search.maven.org/solrsearch/select?q=g:dev.zio+AND+a:zio_2.13&wt=json" | jq
    */
-  def buildUriFromGav(gav: Gav): String =
+  private def buildUriFromGav(gav: Gav): String =
     s"$scheme://$host/$path?q=g:${gav.group}+AND+a:${gav.artifact}&wt=json"
 
-  val layer =
+  val layer: URLayer[HttpClient, ZioHttpManager] =
     ZLayer.fromFunction(client => ZioHttpManager(client))
 }
