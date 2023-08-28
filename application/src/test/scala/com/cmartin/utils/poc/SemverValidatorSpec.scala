@@ -4,7 +4,7 @@ import com.cmartin.utils.TestUtils
 import just.semver.SemVer
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import zio.{IO, ZIO}
+import zio.{IO, UIO, ZIO}
 
 import scala.util.matching.Regex
 
@@ -24,30 +24,30 @@ class SemverValidatorSpec extends AnyFlatSpec
       case _                => ZIO.fail("invalid version")
     }
 
-  def validate(version: String) =
+  def validate(version: String): UIO[ Boolean] =
     SemVer.parse(version).fold(
       _ => ZIO.succeed(false),
       _ => ZIO.succeed(true)
     )
 
   it should s"validate $nettyLine" in {
-    val prog = for {
+    val program = for {
       version <- extractVersion(nettyLine)
       _       <- zio.Console.printLine(s"$version")
       result  <- validate(version)
     } yield result
 
-    TestUtils.run(prog) shouldBe false
+    TestUtils.run(program) shouldBe false
   }
 
   it should s"validate $slf4jLine" in {
-    val prog = for {
+    val program = for {
       version <- extractVersion(slf4jLine)
       _       <- zio.Console.printLine(s"$version")
       result  <- validate(version)
     } yield result
 
-    TestUtils.run(prog) shouldBe true
+    TestUtils.run(program) shouldBe true
   }
 
 }
