@@ -5,7 +5,7 @@ import zio.Runtime.{default => runtime}
 
 object TestUtils {
 
-  def run[E, A](program: ZIO[Any, E, A]) =
+  def run[E, A](program: ZIO[Any, E, A]): A =
     Unsafe.unsafe { implicit u =>
       runtime.unsafe.run(program).getOrThrowFiberFailure()
     }
