@@ -21,13 +21,7 @@ object StreamBasedLogic {
     case class MavenDependency(g: String, a: String, v: String) extends Dependency
 
     object MavenDependency {
-      def fromRegexMatch(regexMatch: Regex.Match): MavenDependency =
-        MavenDependency(
-          regexMatch.group(1), // group
-          regexMatch.group(2), // artifact
-          regexMatch.group(3)  // version
-        )
-
+      
       implicit val encoder: JsonEncoder[MavenDependency] =
         DeriveJsonEncoder.gen[MavenDependency]
 
