@@ -6,7 +6,7 @@ import zio.kafka.producer.{Producer, ProducerSettings}
 import zio.stream.ZStream
 import zio.{ZIOAppDefault, _}
 
-object KafkaProducerApp
+object KafkaLineProducerApp
     extends ZIOAppDefault {
 
   private val bootstrapServer: String = "localhost:29092"
