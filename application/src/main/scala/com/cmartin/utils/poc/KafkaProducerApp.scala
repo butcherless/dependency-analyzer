@@ -1,18 +1,10 @@
 package com.cmartin.utils.poc
 
-import com.cmartin.utils.poc.KafkaPoc._
-import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{
-  InvalidDependency,
-  InvalidDependencySerde,
-  MavenDependency,
-  MavenDependencySerde
-}
+import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{InvalidDependency, InvalidDependencySerde, MavenDependency, MavenDependencySerde}
 import com.cmartin.utils.poc.StreamBasedLogic._
-import zio.{ZIOAppDefault, _}
 import zio.kafka.producer.{Producer, ProducerSettings}
 import zio.stream.ZStream
-
-import java.time.Instant
+import zio.{ZIOAppDefault, _}
 
 object KafkaProducerApp
     extends ZIOAppDefault {
@@ -22,11 +14,6 @@ object KafkaProducerApp
   private val INVALID_LINE_TOPIC      = "invalid-line-topic"
   private val filename                = "application/src/test/resources/dep-list.log"
   private val PROJECT_NAME            = "dependency-analyzer"
-  private val ZIO_LINE                = "dev.zio:zio:2.0.16"
-  private val EVENT_COUNT: Int        = 100
-
-  private def buildValue(projectName: String, line: String, time: Instant): DependencyLine =
-    KafkaPoc.DependencyLine(projectName, line, time)
 
   private val mainProgram =
     StreamBasedLogic.getLinesFromFilename(filename)
@@ -52,18 +39,6 @@ object KafkaProducerApp
         ).runDrain
       }
 
-  // TODO: stream for researching
-  val dummyProducer         =
-    ZStream
-      .fromSchedule(Schedule.recurs(EVENT_COUNT) && Schedule.fixed(250.milliseconds))
-      .mapZIO(_ => Clock.currentDateTime)
-      .map(time => (PROJECT_NAME, time))
-      .map { case (projectName, time) =>
-        buildRecord(DEPENDENCY_LINE_TOPIC, projectName, buildValue(projectName, ZIO_LINE, time.toInstant))
-      }
-      .tap(record => ZIO.log(s"record $record"))
-      .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
-      .tap(logMetadata(_)())
   private def producerLayer =
     ZLayer.scoped(
       Producer.make(
@@ -71,7 +46,7 @@ object KafkaProducerApp
       )
     )
 
-  def run =
+  def run: RIO[ZIOAppArgs with Scope, Unit] =
     for {
       _ <- ZIO.log("kafka producer application")
       _ <- ZIO.scoped(mainProgram)
@@ -88,4 +63,27 @@ object KafkaProducerApp
     .tap(record => ZIO.log(s"$record"))
     .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
     .tap(logMetadata(_)())
+ */
+
+/*
+// TODO: stream for researching
+
+private val ZIO_LINE                = "dev.zio:zio:2.0.16"
+private val EVENT_COUNT: Int        = 100
+
+val dummyProducer         =
+  ZStream
+    .fromSchedule(Schedule.recurs(EVENT_COUNT) && Schedule.fixed(250.milliseconds))
+    .mapZIO(_ => Clock.currentDateTime)
+    .map(time => (PROJECT_NAME, time))
+    .map { case (projectName, time) =>
+      buildRecord(DEPENDENCY_LINE_TOPIC, projectName, buildValue(projectName, ZIO_LINE, time.toInstant))
+    }
+    .tap(record => ZIO.log(s"record $record"))
+    .via(Producer.produceAll(DependencyLineSerde.key, DependencyLineSerde.value))
+    .tap(logMetadata(_)())
+
+private def buildValue(projectName: String, line: String, time: Instant): DependencyLine =
+  KafkaPoc.DependencyLine(projectName, line, time)
+
  */

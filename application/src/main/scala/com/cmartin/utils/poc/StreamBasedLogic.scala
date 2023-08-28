@@ -21,7 +21,7 @@ object StreamBasedLogic {
     case class MavenDependency(g: String, a: String, v: String) extends Dependency
 
     object MavenDependency {
-      
+
       implicit val encoder: JsonEncoder[MavenDependency] =
         DeriveJsonEncoder.gen[MavenDependency]
 
@@ -95,23 +95,25 @@ object StreamBasedLogic {
       case _                        => false
     }
 
-  def buildRecord[K, V](topic: String, key: K, value: V) =
-    new ProducerRecord(
-      topic,
-      key,
-      value
+  private def buildRecord[K, V](topic: String, key: K, value: V) =
+    ZIO.succeed(
+      new ProducerRecord(
+        topic,
+        key,
+        value
+      )
     )
 
   case class MavenDependencyRequest(topic: String, projectName: String, dependency: MavenDependency)
   case class InvalidDependencyRequest(topic: String, projectName: String, dependency: InvalidDependency)
 
   def processMavenDependency(request: MavenDependencyRequest): UIO[ProducerRecord[String, MavenDependency]] =
-    ZIO.log(s"valid dependency: ${request.dependency}") *>
-      ZIO.succeed(buildRecord(request.topic, request.projectName, request.dependency))
+    logObject(request.dependency) *>
+      buildRecord(request.topic, request.projectName, request.dependency)
 
   def processInvalidDependency(request: InvalidDependencyRequest): UIO[ProducerRecord[String, InvalidDependency]] =
-    ZIO.log(s"invalid dependency: ${request.dependency}") *>
-      ZIO.succeed(buildRecord(request.topic, request.projectName, request.dependency))
+    logObject(request.dependency) *>
+      buildRecord(request.topic, request.projectName, request.dependency)
 
   def logMetadata(metadata: RecordMetadata)(probability: Double = 0.05): ZIO[Any, Nothing, Unit] =
     for {
