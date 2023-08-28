@@ -9,11 +9,12 @@ import zio.{ZIOAppDefault, _}
 object KafkaLineProducerApp
     extends ZIOAppDefault {
 
-  private val bootstrapServer: String = "localhost:29092"
-  private val DEPENDENCY_LINE_TOPIC   = "dependency-line-topic"
-  private val INVALID_LINE_TOPIC      = "invalid-line-topic"
-  private val filename                = "application/src/test/resources/dep-list.log"
-  private val PROJECT_NAME            = "dependency-analyzer"
+  // TODO application configuration
+  private val BOOSTRAP_SERVERS: List[String] = List("localhost:29092")
+  private val DEPENDENCY_LINE_TOPIC          = "dependency-line-topic"
+  private val INVALID_LINE_TOPIC             = "invalid-line-topic"
+  private val filename                       = "application/src/test/resources/dep-list.log"
+  private val PROJECT_NAME                   = "dependency-analyzer"
 
   private val mainProgram =
     StreamBasedLogic.getLinesFromFilename(filename)
@@ -42,13 +43,13 @@ object KafkaLineProducerApp
   private def producerLayer =
     ZLayer.scoped(
       Producer.make(
-        settings = ProducerSettings(List(bootstrapServer))
+        settings = ProducerSettings(BOOSTRAP_SERVERS)
       )
     )
 
   def run: RIO[ZIOAppArgs with Scope, Unit] =
     for {
-      _ <- ZIO.log("kafka producer application")
+      _ <- ZIO.log("kafka line producer application")
       _ <- ZIO.scoped(mainProgram)
              .provide(producerLayer)
     } yield ()
