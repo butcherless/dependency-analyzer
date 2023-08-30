@@ -14,10 +14,14 @@ else
   :valid-dependency-consumer;
   :check-remote-dependency]
   if (hasNewVersion?) equals (no) then
-    :todo-no;
+    :latest-dependency-topic|
+    :latest-dependency-consumer;
+    :process-latest-dependency]
     stop
   else
-    :todo-yes;
+    :upgraded-dependency-topic|
+    :upgraded-dependency-consumer;
+    :process-upgraded-dependency]
     stop
   endif  
   
