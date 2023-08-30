@@ -1,0 +1,28 @@
+@startuml
+:dependency-file;
+:read-line-producer;
+:line-topic|
+:line-consumer;
+:parse line]
+if (isValid?) equals (no) then
+  :invalid-dependency-topic|
+  :invalid-dependency-consumer;
+  :process-invalid-dependency]
+  stop
+else
+  :valid-dependency-topic|
+  :valid-dependency-consumer;
+  :check-remote-dependency]
+  if (hasNewVersion?) equals (no) then
+    :todo-no;
+    stop
+  else
+    :todo-yes;
+    stop
+  endif  
+  
+endif
+
+
+
+@enduml
