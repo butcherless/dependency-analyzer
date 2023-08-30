@@ -15,3 +15,7 @@
 ## Read resource client timeout case secuence diagram
 
 ![Read resource client timeout case Secuence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/butcherless/dependency-analyzer/main/docs/read-202-resource-client-timeout.puml)
+
+## Stream based dependency process activity diagram
+
+![Read resource client timeout case Secuence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/butcherless/dependency-analyzer/main/docs/stream-based-activity-diagram.puml)
