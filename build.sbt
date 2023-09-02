@@ -38,6 +38,7 @@ lazy val application = (project in file("application"))
       sttpZioJson,
       ulid,
       zio,
+      zioStreans,
       zioConfig,
       zioKafka,
       zioLogging
