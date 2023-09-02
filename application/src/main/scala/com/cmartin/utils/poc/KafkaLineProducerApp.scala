@@ -1,6 +1,11 @@
 package com.cmartin.utils.poc
 
-import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{InvalidDependency, InvalidDependencySerde, MavenDependency, MavenDependencySerde}
+import com.cmartin.utils.poc.StreamBasedLogic.Dependency.{
+  InvalidDependency,
+  InvalidDependencySerde,
+  MavenDependency,
+  MavenDependencySerde
+}
 import com.cmartin.utils.poc.StreamBasedLogic._
 import zio.kafka.producer.{Producer, ProducerSettings}
 import zio.stream.ZStream

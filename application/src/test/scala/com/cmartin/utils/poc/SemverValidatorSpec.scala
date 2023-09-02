@@ -24,7 +24,7 @@ class SemverValidatorSpec extends AnyFlatSpec
       case _                => ZIO.fail("invalid version")
     }
 
-  def validate(version: String): UIO[ Boolean] =
+  def validate(version: String): UIO[Boolean] =
     SemVer.parse(version).fold(
       _ => ZIO.succeed(false),
       _ => ZIO.succeed(true)

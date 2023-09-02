@@ -1,5 +1,6 @@
 package com.cmartin.utils.poc
 
+import com.cmartin.utils.TestUtils
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import wvlet.airframe.ulid.ULID
@@ -61,7 +62,7 @@ class ZStreamPocSpec
     } yield formattedAmount
 
     // THEN
-    val amount = run(result)
+    val amount = TestUtils.run(result)
 
     info(s"amount: $amount")
 
@@ -75,12 +76,7 @@ class ZStreamPocSpec
       ZStream.fromSchedule(schedule)
         .tap(a => Console.printLine(s"element: $a"))
 
-    run(stream.runDrain)
+    TestUtils.run(stream.runDrain)
   }
-
-  private def run[E, A](program: ZIO[Any, E, A]) =
-    Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program).getOrThrowFiberFailure()
-    }
 
 }
