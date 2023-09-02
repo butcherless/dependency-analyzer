@@ -4,7 +4,6 @@ import com.cmartin.utils.TestUtils
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import wvlet.airframe.ulid.ULID
-import zio.Runtime.{default => runtime}
 import zio._
 import zio.stream._
 
@@ -71,7 +70,7 @@ class ZStreamPocSpec
 
   it should "generate elements from recurs & fixed schedule" in {
     val EVENT_COUNT = 10
-    val schedule    = Schedule.recurs(EVENT_COUNT) && Schedule.fixed(100.milliseconds)
+    val schedule    = Schedule.recurs(EVENT_COUNT) >>> Schedule.fixed(20.milliseconds)
     val stream      =
       ZStream.fromSchedule(schedule)
         .tap(a => Console.printLine(s"element: $a"))

@@ -1,7 +1,7 @@
 package com.cmartin.utils
 
-import zio.{Unsafe, ZIO}
 import zio.Runtime.{default => runtime}
+import zio.{Unsafe, ZIO}
 
 object TestUtils {
 

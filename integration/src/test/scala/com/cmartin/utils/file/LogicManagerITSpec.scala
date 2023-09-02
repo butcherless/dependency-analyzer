@@ -1,11 +1,10 @@
 package com.cmartin.utils.file
 
 import com.cmartin.utils.domain.{IOManager, LogicManager}
+import com.cmartin.utils.file.TestUtils.{run => unsafeRun}
 import com.cmartin.utils.logic.DependencyLogicManager
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import zio.Runtime.{default => runtime}
-import zio.Unsafe
 
 class LogicManagerITSpec
     extends AnyFlatSpec
@@ -21,9 +20,7 @@ class LogicManagerITSpec
     } yield (parsedLines.failedList, parsedLines.successList, lines.size)
 
     val (errors, dependencies, lineCount) =
-      Unsafe.unsafe { implicit u =>
-        runtime.unsafe.run(program.provide(FileManager.layer ++ DependencyLogicManager.layer)).getOrThrowFiberFailure()
-      }
+      unsafeRun(program.provide(FileManager.layer ++ DependencyLogicManager.layer))
 
     errors shouldBe empty
     dependencies should have size lineCount
@@ -36,9 +33,8 @@ class LogicManagerITSpec
       parsedLines <- LogicManager.parseLines(lines)
     } yield (parsedLines.failedList.size, parsedLines.successList, lines.size)
 
-    val (errors, dependencies, lineCount) = Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program.provide(FileManager.layer ++ DependencyLogicManager.layer)).getOrThrowFiberFailure()
-    }
+    val (errors, dependencies, lineCount) =
+      unsafeRun(program.provide(FileManager.layer ++ DependencyLogicManager.layer))
 
     errors shouldBe 2
     dependencies should have size (lineCount - errors)

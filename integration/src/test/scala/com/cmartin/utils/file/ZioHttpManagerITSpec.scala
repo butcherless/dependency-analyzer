@@ -2,12 +2,12 @@ package com.cmartin.utils.file
 
 import com.cmartin.utils.domain.HttpManager
 import com.cmartin.utils.domain.Model.DomainError.ResponseError
+import com.cmartin.utils.file.TestUtils.{run => unsafeRun}
 import com.cmartin.utils.http.ZioHttpManager
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.client4.httpclient.zio.HttpClientZioBackend
 import zio.{TaskLayer, ZLayer}
-import TestUtils.{run => unsafeRun}
 
 class ZioHttpManagerITSpec
     extends AnyFlatSpec
