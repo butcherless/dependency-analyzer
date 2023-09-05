@@ -7,7 +7,10 @@ import wvlet.airframe.ulid.ULID
 import zio._
 import zio.stream._
 
+import java.nio.file.{Files, Paths}
 import java.time.LocalDate
+import scala.jdk.CollectionConverters._
+import scala.util.matching.Regex
 
 class ZStreamPocSpec
     extends AnyFlatSpec
@@ -78,4 +81,48 @@ class ZStreamPocSpec
     TestUtils.run(stream.runDrain)
   }
 
+  val moduleRegex: Regex = raw"^\.{1,2}/(.*)/src/.*".r
+  val path               = "../application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala"
+
+  it should "read scala files from project using zio streams" in {
+    val fileExtension = ".scala"
+    val projectPath   = Paths.get("..");
+
+    val program =
+      ZStream
+        .fromJavaStream(Files.walk(projectPath))
+        .filter(path => Files.isRegularFile(path))
+        .map(_.toString)
+        .filter(path => path.endsWith(fileExtension))
+        .collect { case moduleRegex(module) => module }
+        .runFold(Set.empty[String])((set, module) => set + module)
+
+    val modules = TestUtils.run(program)
+
+    info(s"project modules: $modules")
+
+    modules shouldBe Set("application", "integration")
+  }
+
+  it should "read scala files from project using scala streams" in {
+    val fileExtension = ".scala"
+    val path          = Paths.get("..");
+
+    val modules =
+      Files.list(path)
+        .iterator()
+        .asScala
+        .filter(p => Files.isDirectory(p) && !Files.isHidden(p))
+        .flatMap { dir =>
+          Files.walk(dir)
+            .iterator().asScala
+            .map(_.toString)
+            .find(path => path.endsWith(fileExtension))
+            .collect { case moduleRegex(module) => module }
+
+        }.toSet
+
+    info(s"modules: $modules")
+    modules shouldBe Set("application", "integration")
+  }
 }

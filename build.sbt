@@ -92,3 +92,5 @@ ThisBuild / assemblyMergeStrategy := {
     val oldStrategy = assemblyMergeStrategy.value
     oldStrategy(x)
 }
+
+enablePlugins(PrintModulesTask)
