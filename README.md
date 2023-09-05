@@ -22,13 +22,12 @@ Build the image
 
 Run the app
 
-    sbt "dependencyList/toFile /tmp/dep-list.log -f"
+    sbt "application/dependencyList/toFile /tmp/dep-list.log -f"
     # TODO set environment variables
     docker run --rm --name depanalyzer \
       --env DL_FILENAME=/tmp/dep-list.log \
       --env DL_EXCLUSIONS=com.cmartin.learn \
       --volume "/tmp:/tmp" dependency-analyzer-app:1.0.0-SNAPSHOT
-    
 
 ## Maven query examples
 
@@ -50,31 +49,15 @@ The App has the following modules:
 - HttpManager: HTTP client
 - LoggingManager: logging app operations
 
-Get dependencies using bash commands
-
-```bash
- gw dep | \
- grep -e '([0-9a-z\.-]*):([a-z-]*):([a-zA-Z0-9\.-]*)' | \
- sed 's/[+\]---//g; s/|//g' | \
- awk '{print $1}' | \
- sort -u
-```
+Get dependencies test command
 
 **curl**
 
     curl -s "https://search.maven.org/solrsearch/select?q=g:dev.zio+AND+a:zio_2.13&wt=json" | jq
 
-Regex
-
-([0-9a-z.]+):([0-9a-z-]+):([0-9.]+)?.*
-
-http://queirozf.com/entries/scala-regular-expressions-examples-reference
-
-https://logback.qos.ch/manual/configuration.html
+Analysis
 
 Obtener dependencias y generar un archivo
-
-gw dep --configuration default > /tmp/gradle-deps-default
 
 Lista de tareas previas al caso de uso:
 
@@ -104,4 +87,5 @@ Lista de tareas previas al caso de uso:
 - Application Modules / ZLayer / Dependency injection
     - https://twitter.com/jdegoes/status/1462758239418867714
     - https://twitter.com/jdegoes/status/1463261876150849547
- 
+- http://queirozf.com/entries/scala-regular-expressions-examples-reference
+- https://logback.qos.ch/manual/configuration.html
