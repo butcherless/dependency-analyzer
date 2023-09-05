@@ -5,7 +5,7 @@ on:
     branches:
       - 'main'
   pull_request:
-    types: [opened]
+    types: [ opened ]
 
 jobs:
 
@@ -15,26 +15,27 @@ jobs:
     timeout-minutes: 10
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Scala and Java
-      uses: coursier/setup-action@v1
-      with:
-        jvm: zulu@20
-    - name: compile main
-      run: sbt -v --client compile 
-      working-directory: ${{env.WORK_DIR}}
-    - name: compile unit tests
-      run: sbt -v --client Test/compile
-      working-directory: ${{env.WORK_DIR}}
-    - name: compile integration tests
-      run: sbt -v --client integration/Test/compile
-      working-directory: ${{env.WORK_DIR}}
-    - name: application tests
-      run: sbt -v --client application/test
-      working-directory: ${{env.WORK_DIR}}
-    - name: integration tests
-      run: sbt -v --client integration/test
-      working-directory: ${{env.WORK_DIR}}
-    - name: assembly
-      run: sbt -v --client assembly
-      working-directory: ${{env.WORK_DIR}}
+      - uses: actions/checkout@v4
+      - name: Setup Scala and Java
+        uses: coursier/setup-action@v1
+        with:
+          jvm: zulu@20
+          cache: 'sbt'
+      - name: compile main
+        run: sbt -v --client compile
+        working-directory: ${{env.WORK_DIR}}
+      - name: compile unit tests
+        run: sbt -v --client Test/compile
+        working-directory: ${{env.WORK_DIR}}
+      - name: compile integration tests
+        run: sbt -v --client integration/Test/compile
+        working-directory: ${{env.WORK_DIR}}
+      - name: application tests
+        run: sbt -v --client application/test
+        working-directory: ${{env.WORK_DIR}}
+      - name: integration tests
+        run: sbt -v --client integration/test
+        working-directory: ${{env.WORK_DIR}}
+      - name: assembly
+        run: sbt -v --client assembly
+        working-directory: ${{env.WORK_DIR}}
