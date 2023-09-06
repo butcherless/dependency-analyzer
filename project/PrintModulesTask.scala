@@ -32,6 +32,7 @@ object PrintModulesTask
             }.toSet
 
         println(modules.mkString("\n"))
+
         ""
       }
     )
