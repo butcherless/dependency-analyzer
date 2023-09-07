@@ -16,7 +16,7 @@ final case class DependencyLogicManager()
   override def parseLines(lines: List[String]): UIO[ParsedLines] =
     ZIO.partitionPar(lines)(parseDepLine)
       .withParallelism(4)
-      .map(ParsedLines.tupled) // result tuple => constructor function
+      .map { case (a, b) => ParsedLines(a, b) }
 
   override def filterValid(dependencies: List[Either[String, Model.Gav]]): UIO[List[Model.Gav]] =
     ZIO.succeed(dependencies.collect { case Right(dep) => dep })

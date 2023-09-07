@@ -30,7 +30,7 @@ final case class ZioHttpManager(client: HttpClient)
 
   override def checkDependencies(gavList: Iterable[Gav]): UIO[GavResults] =
     ZIO.partitionPar(gavList)(getDependency).withParallelism(4)
-      .map(GavResults.tupled)
+      .map { case (a, b) => GavResults(a, b) }
 
   private def getDependency(gav: Gav): IO[DomainError, GavPair] =
     for {
