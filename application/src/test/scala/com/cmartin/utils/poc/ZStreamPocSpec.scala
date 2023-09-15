@@ -11,6 +11,8 @@ import java.nio.file.{Files, Paths}
 import java.time.LocalDate
 import scala.jdk.CollectionConverters._
 import scala.util.matching.Regex
+import java.text.NumberFormat
+import java.util.Locale
 
 class ZStreamPocSpec
     extends AnyFlatSpec
@@ -39,7 +41,13 @@ class ZStreamPocSpec
     annualAmount * daysPerYear / scala.math.pow(365, 2)
 
   def formatAmount(amount: Double): UIO[String] =
-    ZIO.succeed(String.format("%.2f", roundAmount(amount)))
+    // ZIO.succeed(String.format("%.2f", roundAmount(amount)))
+    ZIO.succeed(formatCurrency(amount))
+
+  lazy val locale                            = new Locale("es", "ES")
+  lazy val formatter                         = NumberFormat.getCurrencyInstance(locale)
+  def formatCurrency(amount: Double): String =
+    formatter.format(amount)
 
   it should "calculate sum" in {
     // GIVEN
@@ -64,11 +72,12 @@ class ZStreamPocSpec
     } yield formattedAmount
 
     // THEN
-    val amount = TestUtils.run(result)
+    val amount: String = TestUtils.run(result)
 
     info(s"amount: $amount")
 
     amount.isBlank shouldBe false
+    amount should contain allOf (',', '.')
   }
 
   it should "generate elements from recurs & fixed schedule" in {
