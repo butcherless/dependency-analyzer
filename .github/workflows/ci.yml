@@ -19,7 +19,7 @@ jobs:
       - name: Setup Scala and Java
         uses: coursier/setup-action@v1
         with:
-          jvm: zulu@20
+          jvm: zulu@21
           cache: 'sbt'
       - name: compile main
         run: sbt -v --client compile
