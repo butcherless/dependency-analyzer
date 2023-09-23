@@ -89,3 +89,7 @@ Lista de tareas previas al caso de uso:
     - https://twitter.com/jdegoes/status/1463261876150849547
 - http://queirozf.com/entries/scala-regular-expressions-examples-reference
 - https://logback.qos.ch/manual/configuration.html
+
+## Badges
+
+[![codecov](https://codecov.io/gh/butcherless/dependency-analyzer/graph/badge.svg?token=HC6RPGDU4X)](https://codecov.io/gh/butcherless/dependency-analyzer)
