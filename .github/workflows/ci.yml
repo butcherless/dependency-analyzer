@@ -30,7 +30,10 @@ jobs:
         run: sbt -v --client integration/Test/compile
         working-directory: ${{env.WORK_DIR}}
       - name: application tests
-        run: sbt -v --client application/test
+        run: |
+          sbt -v --client application/coverage
+          sbt -v --client application/test
+          sbt -v --client application/coverageReport
         working-directory: ${{env.WORK_DIR}}
       - name: integration tests
         run: sbt -v --client integration/test
