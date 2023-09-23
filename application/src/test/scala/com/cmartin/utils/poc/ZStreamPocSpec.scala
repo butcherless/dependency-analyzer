@@ -45,6 +45,7 @@ class ZStreamPocSpec
     ZIO.succeed(formatCurrency(amount))
 
   lazy val locale                            = new Locale("es", "ES")
+  Locale.
   lazy val formatter                         = NumberFormat.getCurrencyInstance(locale)
   def formatCurrency(amount: Double): String =
     formatter.format(amount)

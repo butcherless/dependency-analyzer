@@ -30,7 +30,7 @@ jobs:
         run: sbt -v --client integration/Test/compile
         working-directory: ${{env.WORK_DIR}}
       - name: application tests
-        run: sbt xconverage
+        run: sbt xcoverage
         working-directory: ${{env.WORK_DIR}}
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
