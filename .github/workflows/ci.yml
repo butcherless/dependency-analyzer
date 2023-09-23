@@ -9,8 +9,7 @@ on:
 
 jobs:
 
-  build:
-
+  test:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
 
@@ -32,5 +31,17 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}        
       - name: assembly
         run: sbt assembly
+
+  dependency-updates:
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: zulu@20
       - name: dependency updates
         run: sbt xdup
+            
