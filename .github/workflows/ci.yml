@@ -19,7 +19,7 @@ jobs:
       - uses: coursier/cache-action@v6
       - uses: coursier/setup-action@v1
         with:
-          jvm: zulu@21
+          jvm: zulu@20
       - name: compile main
         run: sbt -v --client compile
         working-directory: ${{env.WORK_DIR}}
