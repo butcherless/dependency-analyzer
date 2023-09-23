@@ -1,4 +1,4 @@
-name: Dependency Analyzer CI
+name: CI
 
 on:
   push:

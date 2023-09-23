@@ -92,4 +92,7 @@ Lista de tareas previas al caso de uso:
 
 ## Badges
 
+![Scala CI](https://github.com/butcherless/dependency-analyzer/workflows/CI/badge.svg)
+
+
 [![codecov](https://codecov.io/gh/butcherless/dependency-analyzer/graph/badge.svg?token=HC6RPGDU4X)](https://codecov.io/gh/butcherless/dependency-analyzer)
