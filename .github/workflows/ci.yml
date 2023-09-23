@@ -23,19 +23,29 @@ jobs:
         run: sbt -v compile
       - name: tests
         run: sbt test
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: zulu@20
       - name: tests with coverage
         run: sbt xcoverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}        
-      - name: assembly
-        run: sbt assembly
+          
 
-  dependency-updates:
+  assembly:
     needs: test
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: coursier/cache-action@v6
@@ -44,4 +54,17 @@ jobs:
           jvm: zulu@20
       - name: dependency updates
         run: sbt xdup
+      
+  dependency-updates:
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: coursier/setup-action@v1
+        with:
+          jvm: zulu@20
+      - name: assembly
+        run: sbt assembly
             
