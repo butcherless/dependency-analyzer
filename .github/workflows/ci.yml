@@ -16,9 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Scala and Java
       - uses: coursier/cache-action@v6
-        uses: coursier/setup-action@v1
+      - uses: coursier/setup-action@v1
         with:
           jvm: zulu@20
       - name: compile main
