@@ -20,25 +20,17 @@ jobs:
       - uses: coursier/setup-action@v1
         with:
           jvm: zulu@20
-      - name: compile main
-        run: sbt -v --client compile
-        working-directory: ${{env.WORK_DIR}}
-      - name: compile unit tests
-        run: sbt -v --client Test/compile
-        working-directory: ${{env.WORK_DIR}}
-      - name: compile integration tests
-        run: sbt -v --client integration/Test/compile
-        working-directory: ${{env.WORK_DIR}}
-      - name: application tests
+      - name: compile
+        run: sbt -v compile
+      - name: tests
+        run: sbt test
+      - name: tests with coverage
         run: sbt xcoverage
-        working-directory: ${{env.WORK_DIR}}
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}        
-      - name: integration tests
-        run: sbt -v --client integration/test
-        working-directory: ${{env.WORK_DIR}}
       - name: assembly
-        run: sbt -v --client assembly
-        working-directory: ${{env.WORK_DIR}}
+        run: sbt assembly
+      - name: dependency updates
+        run: sbt xdup
