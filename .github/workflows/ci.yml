@@ -42,20 +42,19 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}        
           
 
-  assembly:
+  dependency-updates:
     needs: test
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: coursier/cache-action@v6
       - uses: coursier/setup-action@v1
         with:
           jvm: zulu@20
       - name: dependency updates
         run: sbt xdup
       
-  dependency-updates:
+  assembly:
     needs: test
     runs-on: ubuntu-22.04
     timeout-minutes: 5
