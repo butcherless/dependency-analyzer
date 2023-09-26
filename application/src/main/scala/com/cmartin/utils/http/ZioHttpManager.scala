@@ -20,14 +20,6 @@ final case class ZioHttpManager(client: HttpClient)
     if (response.code.isSuccess) ZIO.succeed(response.code)
     else ZIO.fail(WebClientError(s"Response error code: ${response.code}"))
 
-  val result: IO[DomainError, Unit] = for {
-    response <- basicRequest.get(uri"dummy-uri").response(asJson[MavenSearchResult]).send(client).mapError(th =>
-                  WebClientError(th.getMessage)
-                )
-    _        <- checkResponseCode(response)
-    _        <- ZIO.fromEither(response.body).mapError(th => WebClientError(th.getMessage))
-  } yield ()
-
   override def checkDependencies(gavList: Iterable[Gav]): UIO[GavResults] =
     ZIO.partitionPar(gavList)(getDependency).withParallelism(4)
       .map { case (a, b) => GavResults(a, b) }
@@ -57,6 +49,32 @@ final case class ZioHttpManager(client: HttpClient)
       ZIO.logDebug(s"remote versions for (g,a)=(${gav.group},${gav.artifact}) -> ${gavs.map(_.version)}")
     else ZIO.logWarning(s"no remote artifacts for: $gav")
 
+  // TODO mapping errors
+  val result: IO[DomainError, MavenSearchResult] =
+    for {
+      response <- basicRequest
+                    .get(uri"dummy-uri")
+                    .response(asJson[MavenSearchResult])
+                    .send(client)
+                    .mapError(th => WebClientError(th.getMessage))
+      _        <- checkResponseCode(response)
+      res      <- ZIO.fromEither(response.body)
+                    .mapError(th => WebClientError(th.getMessage))
+    } yield res
+
+    // TODO mapping errors
+    val req1 =
+      basicRequest
+        .get(uri"dummy-url")
+        .response(asJson[MavenSearchResult])
+
+    val zioResp1 =
+      for {
+        res  <- req1.send(client)
+        code <- ZIO.succeed(res.code)
+        body <- ZIO.fromEither(res.body) // only if http code == 2xx
+      } yield code
+
 }
 
 object ZioHttpManager {
@@ -65,12 +83,12 @@ object ZioHttpManager {
 
   private def viewToModel(a: Artifact): Gav = {
     val parsedVersion = SemVer.parse(a.latestVersion).fold(_.toString, render)
-
     Gav(group = a.g, artifact = a.a, parsedVersion)
   }
-  val scheme                                = "https"
-  private val host                          = "search.maven.org"
-  val path                                  = "solrsearch/select"
+
+  val scheme       = "https"
+  private val host = "search.maven.org"
+  val path         = "solrsearch/select"
 
   /* curl -s "https://search.maven.org/solrsearch/select?q=g:dev.zio+AND+a:zio_2.13&wt=json" | jq
    */
