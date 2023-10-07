@@ -9,6 +9,6 @@ object Versions {
   val ulid       = "23.9.3"
   val zio        = "2.0.18"
   val zioConfig  = "4.0.0-RC16"
-  val zioKafka   = "2.4.3"
+  val zioKafka   = "2.5.0"
   val zioLogging = "2.1.14"
 }
