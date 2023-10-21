@@ -86,10 +86,12 @@ addCommandAlias("xdl", "dependencyList")
 addCommandAlias("xdeplist", "dependencyList/toFile /tmp/dep-analyzer.log -f")
 
 ThisBuild / assemblyMergeStrategy := {
-  case "META-INF/io.netty.versions.properties" => MergeStrategy.discard
-  case "module-info.class"                     => MergeStrategy.discard
-  case "META-INF/versions/9/module-info.class" => MergeStrategy.discard
-  case x                                       =>
+  case "module-info.class"                                        => MergeStrategy.discard
+  case "META-INF/io.netty.versions.properties"                    => MergeStrategy.discard
+  case "META-INF/versions/9/module-info.class"                    => MergeStrategy.discard
+  case PathList("scala", "math", "ScalaNumber.class")             => MergeStrategy.first
+  case PathList("scala-native", xs @ _*) if xs.last endsWith ".c" => MergeStrategy.first
+  case x                                                          =>
     val oldStrategy = assemblyMergeStrategy.value
     oldStrategy(x)
 }
