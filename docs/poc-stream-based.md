@@ -79,4 +79,4 @@ Consume topic `dependency-line-topic`
 
 This is scala source code rendering
 
-https://github.com/butcherless/dependency-analyzer/blob/8714c5fab749f9148ed2272c14a4dd66919166bc/application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala#L1
+https://github.com/butcherless/dependency-analyzer/blob/8714c5fab749f9148ed2272c14a4dd66919166bc/application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala?plain=1
