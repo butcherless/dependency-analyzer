@@ -74,3 +74,9 @@ Consume topic `dependency-line-topic`
 - https://kafka.apache.org/downloads
 - https://github.com/edenhill/kcat
 - https://www.baeldung.com/ops/kafka-list-topics
+
+## Rendering source code examples
+
+This is scala source code rendering
+
+https://github.com/butcherless/dependency-analyzer/blob/main/application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala?plain=1
