@@ -62,18 +62,18 @@ final case class ZioHttpManager(client: HttpClient)
                     .mapError(th => WebClientError(th.getMessage))
     } yield res
 
-    // TODO mapping errors
-    val req1 =
-      basicRequest
-        .get(uri"dummy-url")
-        .response(asJson[MavenSearchResult])
+  // TODO mapping errors
+  val req1 =
+    basicRequest
+      .get(uri"dummy-url")
+      .response(asJson[MavenSearchResult])
 
-    val zioResp1 =
-      for {
-        res  <- req1.send(client)
-        code <- ZIO.succeed(res.code)
-        body <- ZIO.fromEither(res.body) // only if http code == 2xx
-      } yield code
+  val zioResp1 =
+    for {
+      res  <- req1.send(client)
+      code <- ZIO.succeed(res.code)
+      body <- ZIO.fromEither(res.body) // only if http code == 2xx
+    } yield code
 
 }
 

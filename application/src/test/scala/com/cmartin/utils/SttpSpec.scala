@@ -7,7 +7,6 @@ import sttp.client4.WebSocketStreamBackend
 import sttp.client4._
 import sttp.client4.httpclient.zio.HttpClientZioBackend
 import sttp.model.StatusCode
-import zio.Runtime.{default => runtime}
 import zio.Task
 import zio._
 
@@ -31,14 +30,26 @@ class SttpSpec
     info(uri)
   }
 
-  "sttp client" should "make a GET request" in {
+  "sttp client" should "make a HEAD request" in {
     val program = HttpClientZioBackend().flatMap { backend =>
-      makeGetRequest(backend)
+      makeHeadRequest(backend)
     }
 
-    val res = run(program.either)
+    val res = TestUtils.run(program.either)
 
     res shouldBe Right(StatusCode.Ok)
+  }
+
+  ignore should "make a GET request" in {
+    val program   = HttpClientZioBackend().flatMap { backend =>
+      makeGetRequest(backend)
+    }
+    val resEither = TestUtils.run(program.either)
+
+    resEither.isRight shouldBe true
+    val body = resEither.getOrElse("")
+    body.nonEmpty shouldBe true
+    info(s"body: $body")
   }
 
   // TODO integration test
@@ -72,7 +83,7 @@ class SttpSpec
       makeGetRequests(backend, urls)
     }
 
-    val res = run(program.either)
+    val res = TestUtils.run(program.either)
 
     info(s"result: $res")
     res.isRight shouldBe true
@@ -86,24 +97,31 @@ class SttpSpec
     def makeGetRequest(url: String) =
       for {
         _        <- ZIO.log(s"trying get to URL: $url")
-        response <- getRequest(url).send(backend).mapError(e => s"${e.getMessage()}")
+        response <- getHeadRequest(url).send(backend).mapError(e => s"${e.getMessage()}")
         code     <- manageStatusCode(response.code)
       } yield code
 
     ZIO.foreachPar(urls)(makeGetRequest).withParallelism(4)
   }
 
-  def makeGetRequest(backend: HttpBackend): IO[String, StatusCode] =
+  def makeHeadRequest(backend: HttpBackend): IO[String, StatusCode] =
     for {
-      response <- getRequest("https://apache.org/")
+      response <- getHeadRequest("https://apache.org/")
                     .send(backend).mapError(e => s"${e.getMessage()}")
       code     <- manageStatusCode(response.code)
     } yield code
 
+  def makeGetRequest(backend: HttpBackend): IO[String, String] =
+    for {
+      response <- buildGetRequest("http://localhost:8180/realms/pelayo-desa/.well-known/openid-configuration")
+                    .send(backend).mapError(e => s"${e.getMessage()}")
+      result   <- ZIO.fromEither(response.body)
+    } yield result
+
   object SttpSpec {
     type HttpBackend = WebSocketStreamBackend[Task, ZioStreams]
 
-    def getRequest(url: String) =
+    def getHeadRequest(url: String) =
       basicRequest
         .head(uri"$url")
         .response(asString)
@@ -114,12 +132,12 @@ class SttpSpec
         case _                => ZIO.fail(s"client request or server error with code: $code")
       }
 
-  }
+    def buildGetRequest(url: String): Request[Either[String, String]] =
+      basicRequest
+        .get(uri"$url")
+        .response(asString)
 
-  private def run[E, A](program: IO[E, A]) =
-    Unsafe.unsafe { implicit u =>
-      runtime.unsafe.run(program).getOrThrowFiberFailure()
-    }
+  }
 
   /*
   ignore should "make a post request" in {
