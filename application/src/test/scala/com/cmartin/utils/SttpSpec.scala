@@ -52,6 +52,24 @@ class SttpSpec
     info(s"body: $body")
   }
 
+  ignore should "make a GET authorization request" in {
+    val program   = HttpClientZioBackend().flatMap { backend =>
+      makeGetAuthRequest(backend)
+    }
+    val resEither = TestUtils.run(program.either)
+
+    info(s"response: $resEither")
+
+    resEither.isRight shouldBe true
+    resEither.map { tuple =>
+      tuple._1 shouldBe StatusCode.Found
+      tuple._2.nonEmpty shouldBe true
+      info(s"Location: ${tuple._2}")
+    }
+
+    // info(s"body: $body")
+  }
+
   // TODO integration test
   ignore should "make a GET request sequence" in {
     val urls = Seq(
@@ -118,6 +136,14 @@ class SttpSpec
       result   <- ZIO.fromEither(response.body)
     } yield result
 
+  def makeGetAuthRequest(backend: HttpBackend): IO[Serializable, (StatusCode, String)] =
+    for {
+      response <- buildGetRequest("http://localhost:8081/oauth2/authorization/local-sisnet")
+                    .send(backend).mapError(e => s"${e.getMessage()}")
+      code     <- ZIO.succeed(response.code)
+      location <- ZIO.fromOption(response.headers.find(_.name == "location"))
+    } yield (code, location.value)
+
   object SttpSpec {
     type HttpBackend = WebSocketStreamBackend[Task, ZioStreams]
 
@@ -134,6 +160,7 @@ class SttpSpec
 
     def buildGetRequest(url: String): Request[Either[String, String]] =
       basicRequest
+        .followRedirects(false)
         .get(uri"$url")
         .response(asString)
 
