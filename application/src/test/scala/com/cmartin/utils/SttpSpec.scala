@@ -1,5 +1,6 @@
 package com.cmartin.utils
 
+import com.cmartin.utils.poc.SttpWebClientPoc
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.capabilities.zio.ZioStreams
@@ -19,6 +20,19 @@ class SttpSpec
   // TODO Sttp/Zio-2 implicit val backend = Runtime.default.unsafeRun(AsyncHttpClientZioBackend())
 
   behavior of "Sttp client"
+
+  "Get request" should "T01: retrieve a JSON response" in {
+    val program = HttpClientZioBackend().flatMap { backend =>
+      SttpWebClientPoc.makeGetJsonRequest(backend)
+    }
+
+    val result = TestUtils.run(program)
+
+    result.slideshow.title shouldBe "Sample Slide Show"
+    result.slideshow.author shouldBe "Yours Truly"
+    result.slideshow.date shouldBe "date of publication"
+
+  }
 
   "Raw interpolator" should "build an encoded string" in {
     val group    = "dev.zio"
@@ -110,12 +124,12 @@ class SttpSpec
     )
   }
 
-  def makeGetRequests(backend: HttpBackend, urls: Seq[String]) = {
+  def makeGetRequests(backend: HttpBackend, urls: Seq[String]): IO[String, Seq[StatusCode]] = {
 
     def makeGetRequest(url: String) =
       for {
         _        <- ZIO.log(s"trying get to URL: $url")
-        response <- getHeadRequest(url).send(backend).mapError(e => s"${e.getMessage()}")
+        response <- getHeadRequest(url).send(backend).mapError(e => s"${e.getMessage}")
         code     <- manageStatusCode(response.code)
       } yield code
 
@@ -125,21 +139,21 @@ class SttpSpec
   def makeHeadRequest(backend: HttpBackend): IO[String, StatusCode] =
     for {
       response <- getHeadRequest("https://apache.org/")
-                    .send(backend).mapError(e => s"${e.getMessage()}")
+                    .send(backend).mapError(e => s"${e.getMessage}")
       code     <- manageStatusCode(response.code)
     } yield code
 
   def makeGetRequest(backend: HttpBackend): IO[String, String] =
     for {
       response <- buildGetRequest("http://localhost:8180/realms/pelayo-desa/.well-known/openid-configuration")
-                    .send(backend).mapError(e => s"${e.getMessage()}")
+                    .send(backend).mapError(e => s"${e.getMessage}")
       result   <- ZIO.fromEither(response.body)
     } yield result
 
   def makeGetAuthRequest(backend: HttpBackend): IO[Serializable, (StatusCode, String)] =
     for {
       response <- buildGetRequest("http://localhost:8081/oauth2/authorization/local-sisnet")
-                    .send(backend).mapError(e => s"${e.getMessage()}")
+                    .send(backend).mapError(e => s"${e.getMessage}")
       code     <- ZIO.succeed(response.code)
       location <- ZIO.fromOption(response.headers.find(_.name == "location"))
     } yield (code, location.value)
@@ -147,12 +161,12 @@ class SttpSpec
   object SttpSpec {
     type HttpBackend = WebSocketStreamBackend[Task, ZioStreams]
 
-    def getHeadRequest(url: String) =
+    def getHeadRequest(url: String): Request[Either[String, String]] =
       basicRequest
         .head(uri"$url")
         .response(asString)
 
-    def manageStatusCode(code: StatusCode) =
+    def manageStatusCode(code: StatusCode): ZIO[Any, String, StatusCode] =
       code match {
         case x if x.isSuccess => ZIO.succeed(code)
         case _                => ZIO.fail(s"client request or server error with code: $code")
