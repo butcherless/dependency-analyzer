@@ -1,7 +1,7 @@
 package com.cmartin.utils.poc
 
 import com.cmartin.utils.poc.SttpWebClientPoc.ClientError.{PayloadError, ProtocolError, UnknownError}
-import com.cmartin.utils.poc.SttpWebClientPoc.Model.SlideShowResponse
+import com.cmartin.utils.poc.SttpWebClientPoc.Model._
 import sttp.capabilities.zio.ZioStreams
 import sttp.client4._
 import sttp.client4.ziojson._
@@ -46,11 +46,28 @@ object SttpWebClientPoc {
       implicit val decoder: JsonDecoder[SlideShowResponse] = DeriveJsonDecoder.gen[SlideShowResponse]
     }
 
+    final case class BasicUserDetails(
+        authenticated: Boolean,
+        user: String
+    )
+
+    object BasicUserDetails {
+      implicit val decoder: JsonDecoder[BasicUserDetails] = DeriveJsonDecoder.gen[BasicUserDetails]
+    }
+
   }
 
   def makeGetJsonRequest(backend: HttpBackend): IO[ClientError, SlideShowResponse] =
     for {
       resEither <- buildGetJsonRequest("https://httpbin.org/json")
+                     .send(backend).mapError(e => UnknownError(e.getMessage))
+      response  <- getResponseOkOrError(resEither)
+      body      <- getResponseBodyOrError(response)
+    } yield body
+
+  def makeBasicAuthRequest(backend: HttpBackend): IO[ClientError, BasicUserDetails] =
+    for {
+      resEither <- buildSimpleAuthRequest("https://httpbin.org/basic-auth/user/secret")
                      .send(backend).mapError(e => UnknownError(e.getMessage))
       response  <- getResponseOkOrError(resEither)
       body      <- getResponseBodyOrError(response)
@@ -62,11 +79,19 @@ object SttpWebClientPoc {
       .get(uri"$url")
       .response(asJson[SlideShowResponse])
 
-  def getResponseOkOrError(response: Response[Either[ResponseException[String, String], SlideShowResponse]]) =
+  def buildSimpleAuthRequest(url: String) =
+    basicRequest
+      .auth
+      .basic("user", "secret")
+      .contentType(MediaType.ApplicationJson)
+      .get(uri"$url")
+      .response(asJson[BasicUserDetails])
+
+  def getResponseOkOrError[A](response: Response[Either[ResponseException[String, String], A]]) =
     if (response.code == StatusCode.Ok) ZIO.succeed(response.body)
     else ZIO.fail(ProtocolError(s"response error: ${response.code}"))
 
-  def getResponseBodyOrError(bodyEither: Either[ResponseException[String, String], SlideShowResponse]) =
+  def getResponseBodyOrError[A](bodyEither: Either[ResponseException[String, String], A]) =
     bodyEither
       .fold(
         e => ZIO.fail(PayloadError(s"payload error: ${e.getMessage}")),

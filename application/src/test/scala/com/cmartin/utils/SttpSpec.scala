@@ -1,6 +1,7 @@
 package com.cmartin.utils
 
 import com.cmartin.utils.poc.SttpWebClientPoc
+import com.cmartin.utils.poc.SttpWebClientPoc.Model.BasicUserDetails
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sttp.capabilities.zio.ZioStreams
@@ -31,7 +32,16 @@ class SttpSpec
     result.slideshow.title shouldBe "Sample Slide Show"
     result.slideshow.author shouldBe "Yours Truly"
     result.slideshow.date shouldBe "date of publication"
+  }
 
+  it should "T02: make a basic auth request" in {
+    val program = HttpClientZioBackend().flatMap { backend =>
+      SttpWebClientPoc.makeBasicAuthRequest(backend)
+    }
+
+    val result = TestUtils.run(program)
+
+    result shouldBe BasicUserDetails(authenticated = true, user = "user")
   }
 
   "Raw interpolator" should "build an encoded string" in {
