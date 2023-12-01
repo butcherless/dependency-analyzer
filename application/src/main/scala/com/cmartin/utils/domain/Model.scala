@@ -114,6 +114,24 @@ object Model {
     implicit val decoder: JsonDecoder[ResponseHeader] = DeriveJsonDecoder.gen[ResponseHeader]
   }
 
+  /** Represents the parameters used for a query.
+    *
+    * @param q
+    *   The query string.
+    * @param core
+    *   The core name to query.
+    * @param fl
+    *   The comma-separated list of fields to retrieve.
+    * @param sort
+    *   The field to sort the results by.
+    * @param rows
+    *   The maximum number of rows to retrieve.
+    * @param wt
+    *   The response format. Can be "json", "xml", etc.
+    * @param version
+    *   The version of the query parameters.
+    */
+
   final case class Params(
       q: String,
       core: String,
