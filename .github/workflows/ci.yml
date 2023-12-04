@@ -11,59 +11,27 @@ jobs:
 
   test:
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
-      - uses: coursier/cache-action@v6
-      - uses: coursier/setup-action@v1
+      - uses: actions/setup-java@v4
         with:
-          jvm: zulu@21
+          distribution: 'zulu'
+          java-version: '21'
+          cache: 'sbt'      
       - name: compile
         run: sbt -v compile
       - name: tests
         run: sbt test
-
-  coverage:
-    needs: test
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: coursier/cache-action@v6
-      - uses: coursier/setup-action@v1
-        with:
-          jvm: zulu@20
       - name: tests with coverage
         run: sbt xcoverage
-      - name: Upload coverage reports to Codecov
+      - name: upload coverage reports to codecov
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}        
-          
-
-  dependency-updates:
-    needs: test
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: coursier/setup-action@v1
-        with:
-          jvm: zulu@20
-      - name: dependency updates
-        run: sbt xdup
-      
-  assembly:
-    needs: test
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: coursier/cache-action@v6
-      - uses: coursier/setup-action@v1
-        with:
-          jvm: zulu@20
       - name: assembly
         run: sbt assembly
+      - name: dependency updates
+        run: sbt xdup
             
