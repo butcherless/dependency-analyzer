@@ -67,7 +67,7 @@ object SttpWebClientPoc {
 
   def makeBasicAuthRequest(backend: HttpBackend): IO[ClientError, BasicUserDetails] =
     for {
-      resEither <- buildSimpleAuthRequest("https://httpbin.org/basic-auth/user/secret")
+      resEither <- buildSimpleAuthRequest("https://httpbin.org/basic-auth/user/secret", "user", "secret")
                      .send(backend).mapError(e => UnknownError(e.getMessage))
       response  <- getResponseOkOrError(resEither)
       body      <- getResponseBodyOrError(response)
@@ -79,10 +79,10 @@ object SttpWebClientPoc {
       .get(uri"$url")
       .response(asJson[SlideShowResponse])
 
-  def buildSimpleAuthRequest(url: String) =
+  def buildSimpleAuthRequest(url: String, user:String, secret: String) =
     basicRequest
       .auth
-      .basic("user", "secret")
+      .basic(user, secret)
       .contentType(MediaType.ApplicationJson)
       .get(uri"$url")
       .response(asJson[BasicUserDetails])
