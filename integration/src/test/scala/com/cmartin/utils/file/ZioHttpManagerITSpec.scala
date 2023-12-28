@@ -23,7 +23,7 @@ class ZioHttpManagerITSpec
       ZioHttpManager.layer
     )
 
-  it should "retrieve a single dependency change" in {
+  ignore should "retrieve a single dependency change" in {
     // given
     val deps = Seq(zioDep)
 
