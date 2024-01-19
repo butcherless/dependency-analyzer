@@ -95,3 +95,4 @@ Lista de tareas previas al caso de uso:
     - https://twitter.com/jdegoes/status/1463261876150849547
 - http://queirozf.com/entries/scala-regular-expressions-examples-reference
 - https://logback.qos.ch/manual/configuration.html
+- ZIO log example: https://github.com/zio/zio-logging/blob/master/docs/reconfigurable-logger.md#console-logger-with-configuration-by-http-apis
