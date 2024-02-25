@@ -79,7 +79,7 @@ object SttpWebClientPoc {
       .get(uri"$url")
       .response(asJson[SlideShowResponse])
 
-  def buildSimpleAuthRequest(url: String, user:String, secret: String) =
+  def buildSimpleAuthRequest(url: String, user: String, secret: String) =
     basicRequest
       .auth
       .basic(user, secret)
