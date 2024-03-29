@@ -3,7 +3,7 @@ import sbtassembly.AssemblyKeys.{assembly, assemblyMergeStrategy}
 import sbtassembly.MergeStrategy
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-ThisBuild / scalaVersion := "2.13.13"
+ThisBuild / scalaVersion := "3.4.1"
 ThisBuild / organization := "com.cmartin.learn"
 
 lazy val basicScalacOptions = Seq(

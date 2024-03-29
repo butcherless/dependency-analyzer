@@ -10,7 +10,7 @@ object Dependencies {
   lazy val justSemver     = "io.kevinlee"   %% "just-semver"     % Versions.justSemver
   lazy val logback        = "ch.qos.logback" % "logback-classic" % Versions.logback
 
-  lazy val figlet4s = "com.colofabrix.scala" %% "figlet4s-core" % Versions.figlet4s
+  lazy val figlet4s = "com.colofabrix.scala" % "figlet4s-core_2.13" % Versions.figlet4s
 
   lazy val sttpCore     = "com.softwaremill.sttp.client4" %% "core"                          % Versions.sttp
   lazy val sttpZio      = "com.softwaremill.sttp.client4" %% "zio"                           % Versions.sttp
