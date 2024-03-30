@@ -16,7 +16,7 @@ import zio._
 final case class ZioHttpManager(client: HttpClient)
     extends HttpManager {
 
-  private def checkResponseCode(response: Response[_]) =
+  private def checkResponseCode(response: Response[?]) =
     if (response.code.isSuccess) ZIO.succeed(response.code)
     else ZIO.fail(WebClientError(s"Response error code: ${response.code}"))
 

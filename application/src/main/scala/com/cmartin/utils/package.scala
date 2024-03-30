@@ -12,7 +12,7 @@ package object utils {
   val toExitCode: Int => ExitCode =
     ExitCode(_)
 
-  def getMillis(): URIO[Clock, Long] =
+  def getMillis: URIO[Clock, Long] =
     Clock.currentTime(TimeUnit.MILLISECONDS)
 
   def calcElapsedMillis(start: Long): URIO[Clock, Long] =
@@ -33,7 +33,7 @@ package object utils {
     ZIOAspect.loggedWith[T](a => s"$message: $a")
 
   def iterableLog(message: String) =
-    ZIOAspect.loggedWith[Iterable[_]](i => s"$message:${i.mkString("\n", "\n", "")}")
+    ZIOAspect.loggedWith[Iterable[?]](i => s"$message:${i.mkString("\n", "\n", "")}")
 
   def iterablePairLog(message: String) =
     ZIOAspect.loggedWith[LogicManager.ParsedLines] { parsedLines =>

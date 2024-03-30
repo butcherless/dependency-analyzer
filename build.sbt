@@ -3,7 +3,7 @@ import sbtassembly.AssemblyKeys.{assembly, assemblyMergeStrategy}
 import sbtassembly.MergeStrategy
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-ThisBuild / scalaVersion := "3.4.1"
+ThisBuild / scalaVersion := Versions.scala
 ThisBuild / organization := "com.cmartin.learn"
 
 lazy val basicScalacOptions = Seq(
@@ -13,8 +13,7 @@ lazy val basicScalacOptions = Seq(
   "-feature",
   "-unchecked",
   "-language:postfixOps",
-  "-language:higherKinds",
-  "-Xlint:unused"
+  "-language:higherKinds"
 )
 
 lazy val commonSettings = Seq(
@@ -66,9 +65,10 @@ lazy val integration = (project in file("integration"))
 // clear screen and banner
 lazy val cls = taskKey[Unit]("Prints a separator")
 cls := {
+  val downArrow     = "\u2193"
   val brs           = "\n".repeat(2)
   val message       = "BUILD BEGINS HERE"
-  val spacedMessage = message.mkString("* ", " ", " *")
+  val spacedMessage = message.mkString(s"$downArrow ", " ", s" $downArrow")
   val chars         = "*".repeat(spacedMessage.length())
   println(s"$brs$chars")
   println(spacedMessage)
@@ -90,6 +90,8 @@ ThisBuild / assemblyMergeStrategy := {
   case "META-INF/io.netty.versions.properties"                    => MergeStrategy.discard
   case "META-INF/versions/9/module-info.class"                    => MergeStrategy.discard
   case PathList("scala", "math", "ScalaNumber.class")             => MergeStrategy.first
+  case PathList("just", "semver", xs @ _*)                        => MergeStrategy.first
+  case PathList("just", "decver", xs @ _*)                        => MergeStrategy.first
   case PathList("scala-native", xs @ _*) if xs.last endsWith ".c" => MergeStrategy.first
   case x                                                          =>
     val oldStrategy = assemblyMergeStrategy.value

@@ -52,7 +52,7 @@ object KafkaLineProducerApp
       )
     )
 
-  def run: RIO[ZIOAppArgs with Scope, Unit] =
+  def run: RIO[ZIOAppArgs & Scope, Unit] =
     for {
       _ <- ZIO.log("kafka line producer application")
       _ <- ZIO.scoped(mainProgram)

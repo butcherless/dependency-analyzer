@@ -34,7 +34,7 @@ object DependencyAnalyzerApp
       for {
         _           <- printBanner("Dependency Analyzer")
         config      <- readFromEnv()
-        startTime   <- getMillis()
+        startTime   <- getMillis
         lines       <- IOManager.getLinesFromFile(config.filename)
         parsedLines <- LogicManager.parseLines(lines) @@ iterablePairLog("parsingErrors")
         _           <- LogicManager.calculateValidRate(lines.size, parsedLines.successList.size) @@

@@ -129,7 +129,7 @@ object Zio2Layers
     object AuditServiceLive {
       final case class AuditServiceDeps(airlineRepository: AirlineRepository, aircraftRepository: AircraftRepository)
 
-      val layer: URLayer[AirlineRepository with AircraftRepository, AuditService] =
+      val layer: URLayer[AirlineRepository & AircraftRepository, AuditService] =
         ZLayer {
           for {
             airlineRepo  <- ZIO.service[AirlineRepository]
@@ -150,7 +150,7 @@ object Zio2Layers
   }
 
   type ApplicationDependencies =
-    Config with Database with AirlineRepository with AircraftRepository with AuditService
+    Config & Database & AirlineRepository & AircraftRepository & AuditService
 
   override def run = {
 
