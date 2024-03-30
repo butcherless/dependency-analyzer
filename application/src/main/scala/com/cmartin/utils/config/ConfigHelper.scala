@@ -55,7 +55,7 @@ object ConfigHelper {
    */
 
   type ApplicationDependencies =
-    Clock with IOManager with LogicManager with HttpManager with WebSocketStreamBackend[Task, ZioStreams]
+    Clock & IOManager & LogicManager & HttpManager & WebSocketStreamBackend[Task, ZioStreams]
 
   val applicationLayer: ZLayer[Any, WebClientError, ApplicationDependencies] =
     ZLayer.make[ApplicationDependencies](

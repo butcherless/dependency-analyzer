@@ -29,7 +29,7 @@ object KafkaInvalidLineConsumerApp
       .aggregateAsync(Consumer.offsetBatches)
       .mapZIO(batch => batch.commit)
 
-  def run: RIO[ZIOAppArgs with Scope, Unit] =
+  def run: RIO[ZIOAppArgs & Scope, Unit] =
     for {
       _ <- logObject("kafka invalid line consumer application")
       _ <- mainProgram.runDrain

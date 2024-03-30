@@ -5,12 +5,14 @@ object Dependencies {
   //
   // production code
   //
-  lazy val typesafeConfig = "com.typesafe"   % "config"          % Versions.config
-  lazy val json4s         = "org.json4s"    %% "json4s-native"   % Versions.json4s
-  lazy val justSemver     = "io.kevinlee"   %% "just-semver"     % Versions.justSemver
-  lazy val logback        = "ch.qos.logback" % "logback-classic" % Versions.logback
+  lazy val typesafeConfig = "com.typesafe"    % "config"                % Versions.config
+  lazy val json4s         = "org.json4s"     %% "json4s-native"         % Versions.json4s
+  lazy val logback        = "ch.qos.logback"  % "logback-classic"       % Versions.logback
+  lazy val scalaJs        = "org.scala-lang" %% "scala3-library_sjs1_3" % Versions.scala
+  lazy val justSemver     =
+    "io.kevinlee" %% "just-semver" % Versions.justSemver exclude ("org.scala-lang", "scala3-library_sjs1_3")
 
-  lazy val figlet4s = "com.colofabrix.scala" %% "figlet4s-core" % Versions.figlet4s
+  lazy val figlet4s = "com.colofabrix.scala" % "figlet4s-core_2.13" % Versions.figlet4s
 
   lazy val sttpCore     = "com.softwaremill.sttp.client4" %% "core"                          % Versions.sttp
   lazy val sttpZio      = "com.softwaremill.sttp.client4" %% "zio"                           % Versions.sttp
