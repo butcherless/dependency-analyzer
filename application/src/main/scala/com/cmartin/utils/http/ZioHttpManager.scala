@@ -4,14 +4,15 @@ import com.cmartin.utils.domain.HttpManager
 import com.cmartin.utils.domain.HttpManager.GavResults
 import com.cmartin.utils.domain.HttpManager.retrieveFirstMajor
 import com.cmartin.utils.domain.Model.DomainError.{NetworkError, WebClientError}
-import com.cmartin.utils.domain.Model._
-import com.cmartin.utils.http.ZioHttpManager._
+import com.cmartin.utils.domain.Model.*
+import com.cmartin.utils.http.ZioHttpManager.*
 import just.semver.SemVer
 import just.semver.SemVer.render
 import sttp.capabilities.zio.ZioStreams
-import sttp.client4._
-import sttp.client4.ziojson._
-import zio._
+import sttp.client4.*
+import sttp.client4.ziojson.*
+import sttp.model.StatusCode
+import zio.*
 
 final case class ZioHttpManager(client: HttpClient)
     extends HttpManager {
@@ -68,7 +69,7 @@ final case class ZioHttpManager(client: HttpClient)
       .get(uri"dummy-url")
       .response(asJson[MavenSearchResult])
 
-  val zioResp1 =
+  val zioResp1: IO[Throwable, StatusCode] =
     for {
       res  <- req1.send(client)
       code <- ZIO.succeed(res.code)
