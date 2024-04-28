@@ -9,7 +9,7 @@ object Versions {
   val sttp       = "4.0.0-M13"
   val ulid       = "24.4.3"
   val zio        = "2.1.0-RC3"
-  val zioConfig  = "4.0.1"
+  val zioConfig  = "4.0.2"
   val zioKafka   = "2.7.4"
   val zioLogging = "2.2.3"
 }
