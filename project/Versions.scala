@@ -1,5 +1,5 @@
 object Versions {
-  val scala      = "3.4.1"
+  val scala      = "3.4.2"
   val config     = "1.4.2"
   val figlet4s   = "0.3.2"
   val json4s     = "4.0.7"
@@ -11,5 +11,5 @@ object Versions {
   val zio        = "2.1.1"
   val zioConfig  = "4.0.2"
   val zioKafka   = "2.7.4"
-  val zioLogging = "2.2.3"
+  val zioLogging = "2.2.4"
 }
