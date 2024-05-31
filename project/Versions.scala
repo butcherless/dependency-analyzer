@@ -7,7 +7,7 @@ object Versions {
   val logback    = "1.5.6"
   val scalatest  = "3.2.18"
   val sttp       = "4.0.0-M16"
-  val ulid       = "24.5.0"
+  val ulid       = "24.5.2"
   val zio        = "2.1.1"
   val zioConfig  = "4.0.2"
   val zioKafka   = "2.7.4"
