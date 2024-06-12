@@ -8,8 +8,8 @@ object Versions {
   val scalatest  = "3.2.18"
   val sttp       = "4.0.0-M16"
   val ulid       = "24.6.0"
-  val zio        = "2.1.2"
+  val zio        = "2.1.3"
   val zioConfig  = "4.0.2"
-  val zioKafka   = "2.7.4"
+  val zioKafka   = "2.7.5"
   val zioLogging = "2.3.0"
 }
