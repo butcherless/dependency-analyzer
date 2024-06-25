@@ -1,6 +1,7 @@
 package com.cmartin.utils.poc
 
 import zio.{IO, UIO, ZIO}
+import zio.Schedule
 
 object MultiWebCientPoc {
 
@@ -35,11 +36,15 @@ object MultiWebCientPoc {
   val requests: List[ClientRequest] = ???
   val fiberNumber: Int              = ???
 
+  /* number of times, status code cases, exponential, etc. */
+  val oneRetryPolicy: Schedule[Any, DomainError, ResponseOne] = ???
+  val twoRetryPolicy: Schedule[Any, DomainError, ResponseTwo] = ???
+
   /* make requests, grouped failures & successes */
   val responses: UIO[(Iterable[DomainError], Iterable[ClientResponse])] =
     ZIO.partitionPar(requests) {
-      case req: RequestOne => clientOne.execute(req)
-      case req: RequestTwo => clientTwo.execute(req)
+      case req: RequestOne => clientOne.execute(req).retry(oneRetryPolicy)
+      case req: RequestTwo => clientTwo.execute(req).retry(twoRetryPolicy)
     }.withParallelism(fiberNumber)
 
   /* process success responses */
