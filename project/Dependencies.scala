@@ -28,6 +28,9 @@ object Dependencies {
   lazy val zioLogging = "dev.zio" %% "zio-logging-slf4j" % Versions.zioLogging
   lazy val zioKafka   = "dev.zio" %% "zio-kafka"         % Versions.zioKafka
 
+  // scraper
+  lazy val scalaScraper = "net.ruippeixotog" %% "scala-scraper" % Versions.scraper
+
   //
   // testing code
   //

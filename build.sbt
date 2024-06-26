@@ -62,6 +62,15 @@ lazy val integration = (project in file("integration"))
     commonSettings
   )
 
+lazy val scraper = (project in file("scraper"))
+  .settings(
+    name := "html-scraper",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      scalaScraper
+    )
+  )
+
 // clear screen and banner
 lazy val cls = taskKey[Unit]("Prints a separator")
 cls := {
