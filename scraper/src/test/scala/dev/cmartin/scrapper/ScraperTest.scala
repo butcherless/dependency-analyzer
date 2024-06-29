@@ -14,9 +14,10 @@ class ScraperTest
 
   val plateRegex = """^\d{2}\*{2}\s[A-Z]{3}$""".r
 
-  val WEBSITE_URL = "https://www.dieselogasolina.com/ultima-matricula.html"
+  val WEBSITE_URL        = "https://www.dieselogasolina.com/ultima-matricula.html"
+  val ENERGY_WEBSITE_URL = "https://tarifaluzhora.es/"
 
-  it should "return the same text" in {
+  it should "retrieve last seen plate" in {
     val browser = new JsoupBrowser()
     val doc     = browser.get(WEBSITE_URL)
 
@@ -26,6 +27,25 @@ class ScraperTest
 
     val result = elements.map(e => e >> text("span"))
       .find(a => plateRegex.matches(a))
+
+    info(s"$result")
+  }
+
+  it should "retrieve best hour range" in {
+    val browser = new JsoupBrowser()
+    val doc     = browser.get("https://tarifaluzhora.es/")
+
+    /* doc for local test */
+    // val doc     = browser.parseFile("scraper/src/test/resources/tarifaluzhora.html")
+
+    // info(doc.toHtml)
+
+    // Extract the elements with class ".active"
+    val divs     = doc >> "div"
+    val elements = divs >> elementList(".template-tlh__big-text")
+    val result   = elements.headOption >> text("p")
+
+    info(s"divs: ${divs.size}, elements: ${elements.size}")
 
     info(s"$result")
   }
