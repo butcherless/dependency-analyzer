@@ -2,20 +2,29 @@ package com.cmartin.utils.poc
 
 import zio.{IO, Schedule, UIO, ZIO}
 
+/** Defines a generic web client for performing parallel operations and
+  * processing success and failure responses.
+  */
 object MultiWebCientPoc {
 
+  /** Client request ADT
+    */
   sealed trait ClientRequest
 
-  case class RequestOne(s: String) extends ClientRequest
+  case class GreenRequest(s: String) extends ClientRequest
 
-  case class RequestTwo(s: String, n: Int) extends ClientRequest
+  case class BlueRequest(s: String, n: Int) extends ClientRequest
 
+  /** Client response ADT
+    */
   sealed trait ClientResponse
 
-  case class ResponseOne(n: Long, b: Boolean) extends ClientResponse
+  case class GreenResponse(n: Long, b: Boolean) extends ClientResponse
 
-  case class ResponseTwo(s: String, b: Boolean) extends ClientResponse
+  case class BlueResponse(s: String, b: Boolean) extends ClientResponse
 
+  /** Domain error ADT
+    */
   sealed trait DomainError
 
   case class ErrorOne() extends DomainError
@@ -24,37 +33,53 @@ object MultiWebCientPoc {
 
   case class ErrorThree() extends DomainError
 
-  trait WebClientService[Req, Res] {
-    def execute(req: Req): IO[DomainError, Res]
+  /** Generic web client
+    */
+  trait WebClientService[ClientRequest, ClientResponse] {
+    def execute(req: ClientRequest): IO[DomainError, ClientResponse]
   }
 
-  case class OneWebClientService() extends WebClientService[RequestOne, ResponseOne] {
-    override def execute(req: RequestOne): IO[DomainError, ResponseOne] = ???
+  /** Specific green web client
+    */
+  case class GreenWebClientService()
+      extends WebClientService[GreenRequest, GreenResponse] {
+    override def execute(req: GreenRequest): IO[DomainError, GreenResponse] = ???
   }
 
-  case class TwoWebClientService() extends WebClientService[RequestTwo, ResponseTwo] {
-    override def execute(req: RequestTwo): IO[DomainError, ResponseTwo] = ???
+  /** Specific blue web client
+    */
+  case class BlueWebClientService()
+      extends WebClientService[BlueRequest, BlueResponse] {
+    override def execute(req: BlueRequest): IO[DomainError, BlueResponse] = ???
   }
 
-  val clientOne: OneWebClientService = ???
-  val clientTwo: TwoWebClientService = ???
-
-  val requests: List[ClientRequest] = ???
-  val fiberNumber: Int              = ???
+  val greenClient: GreenWebClientService = ???
+  val blueClient: BlueWebClientService   = ???
 
   /* number of times, status code cases, exponential, etc. */
-  val oneRetryPolicy: Schedule[Any, DomainError, ResponseOne] = ???
-  val twoRetryPolicy: Schedule[Any, DomainError, ResponseTwo] = ???
+  val greenRetryPolicy: Schedule[Any, DomainError, GreenResponse] = ???
+  val blueRetryPolicy: Schedule[Any, DomainError, BlueResponse]   = ???
 
+  /** process request and produces response
+    *
+    * @param request
+    *   input data
+    * @return
+    *   output data
+    */
   def execute(request: ClientRequest): IO[DomainError, ClientResponse] =
     request match
-      case req: RequestOne => clientOne.execute(req).retry(oneRetryPolicy)
-      case req: RequestTwo => clientTwo.execute(req).retry(twoRetryPolicy)
+      case req: GreenRequest =>
+        greenClient.execute(req)
+          .retry(greenRetryPolicy)
+      case req: BlueRequest  =>
+        blueClient.execute(req)
+          .retry(blueRetryPolicy)
 
   def processSuccess(response: ClientResponse): String =
     response match {
-      case res: ResponseOne => s"${res.n}:${res.b}"
-      case res: ResponseTwo => s"${res.s}:${res.b}"
+      case res: GreenResponse => s"${res.n}:${res.b}"
+      case res: BlueResponse  => s"${res.s}:${res.b}"
     }
 
   def processFail(error: DomainError): String =
@@ -63,6 +88,10 @@ object MultiWebCientPoc {
       case res: ErrorTwo   => s"$res"
       case res: ErrorThree => s"$res"
     }
+
+  /* Requests */
+  val requests: List[ClientRequest] = ???
+  val fiberNumber: Int              = ???
 
   /* make requests, grouped failures & successes */
   val responses: UIO[(Iterable[DomainError], Iterable[ClientResponse])] =
