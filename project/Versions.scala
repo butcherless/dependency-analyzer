@@ -7,7 +7,7 @@ object Versions {
   val logback    = "1.5.6"
   val scalatest  = "3.2.19"
   val scraper    = "3.1.1"
-  val sttp       = "4.0.0-M16"
+  val sttp       = "4.0.0-M17"
   val ulid       = "24.7.1"
   val zio        = "2.1.7"
   val zioConfig  = "4.0.2"
