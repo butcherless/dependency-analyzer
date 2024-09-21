@@ -1,5 +1,5 @@
 object Versions {
-  val scala      = "3.5.0"
+  val scala      = "3.5.1"
   val config     = "1.4.2"
   val figlet4s   = "0.3.2"
   val json4s     = "4.0.7"
