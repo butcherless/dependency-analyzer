@@ -98,6 +98,7 @@ ThisBuild / assemblyMergeStrategy := {
   case "module-info.class"                                        => MergeStrategy.discard
   case "META-INF/io.netty.versions.properties"                    => MergeStrategy.discard
   case "META-INF/versions/9/module-info.class"                    => MergeStrategy.discard
+  case "scala-native/scala-native.properties"                     => MergeStrategy.first
   case PathList("scala", "math", "ScalaNumber.class")             => MergeStrategy.first
   case PathList("just", "semver", xs @ _*)                        => MergeStrategy.first
   case PathList("just", "decver", xs @ _*)                        => MergeStrategy.first
