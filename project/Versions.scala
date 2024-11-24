@@ -9,7 +9,7 @@ object Versions {
   val scraper    = "3.1.1"
   val sttp       = "4.0.0-M19"
   val ulid       = "24.11.0"
-  val zio        = "2.1.12"
+  val zio        = "2.1.13"
   val zioConfig  = "4.0.2"
   val zioKafka   = "2.9.0"
   val zioLogging = "2.4.0"
