@@ -35,7 +35,7 @@ object StreamBasedLogic {
         Serde.string
 
       val value: Serde[Any, MavenDependency] =
-        Serde.string.inmapM[Any, MavenDependency](s =>
+        Serde.string.inmapZIO[Any, MavenDependency](s =>
           ZIO.fromEither(s.fromJson[MavenDependency])
             .mapError(e => new RuntimeException(e))
         )(r => ZIO.succeed(r.toJson))
@@ -58,7 +58,7 @@ object StreamBasedLogic {
         Serde.string
 
       val value: Serde[Any, InvalidDependency] =
-        Serde.string.inmapM[Any, InvalidDependency](s =>
+        Serde.string.inmapZIO[Any, InvalidDependency](s =>
           ZIO.fromEither(s.fromJson[InvalidDependency])
             .mapError(e => new RuntimeException(e))
         )(r => ZIO.succeed(r.toJson))

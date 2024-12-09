@@ -23,7 +23,7 @@ object KafkaPoc {
       Serde.string
 
     val value: Serde[Any, DependencyLine] =
-      Serde.string.inmapM[Any, DependencyLine](s =>
+      Serde.string.inmapZIO[Any, DependencyLine](s =>
         ZIO.fromEither(s.fromJson[DependencyLine])
           .mapError(e => new RuntimeException(e))
       )(r => ZIO.succeed(r.toJson))
@@ -44,7 +44,7 @@ object KafkaPoc {
       Serde.long
 
     val value: Serde[Any, MyEvent] =
-      Serde.string.inmapM[Any, MyEvent](s =>
+      Serde.string.inmapZIO[Any, MyEvent](s =>
         ZIO.fromEither(s.fromJson[MyEvent])
           .mapError(e => new RuntimeException(e))
       )(r => ZIO.succeed(r.toJson))
