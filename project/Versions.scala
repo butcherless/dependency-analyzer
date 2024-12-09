@@ -1,5 +1,5 @@
 object Versions {
-  val scala      = "3.6.1"
+  val scala      = "3.6.2"
   val config     = "1.4.2"
   val figlet4s   = "0.3.2"
   val json4s     = "4.0.7"
@@ -8,7 +8,7 @@ object Versions {
   val scalatest  = "3.2.19"
   val scraper    = "3.1.2"
   val sttp       = "4.0.0-M19"
-  val ulid       = "24.12.0"
+  val ulid       = "24.12.1"
   val zio        = "2.1.13"
   val zioConfig  = "4.0.2"
   val zioKafka   = "2.9.0"
