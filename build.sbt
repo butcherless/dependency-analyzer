@@ -71,6 +71,16 @@ lazy val scraper = (project in file("scraper"))
     )
   )
 
+lazy val `zio-http` = (project in file("zio-http"))
+  .settings(
+    name := "zio-http-server",
+    commonSettings,
+    libraryDependencies ++= Seq(
+      zioHttp
+    )
+  )
+
+
 // clear screen and banner
 lazy val cls = taskKey[Unit]("Prints a separator")
 cls := {

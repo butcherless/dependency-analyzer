@@ -31,6 +31,10 @@ object Dependencies {
   // scraper
   lazy val scalaScraper = "net.ruippeixotog" %% "scala-scraper" % Versions.scraper
 
+  // zio http server
+  lazy val zioHttp = "dev.zio" %% "zio-http" % Versions.zioHttp
+
+
   //
   // testing code
   //
