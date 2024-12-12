@@ -92,7 +92,7 @@ class ZStreamPocSpec
 
   val moduleRegex: Regex = raw"^\.{1,2}/(.*)/src/.*".r
   val path               = "../application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala"
-  val expectedSet        = Set("application", "integration", "scraper")
+  val expectedSet        = Set("application", "integration", "scraper", "zio-http")
 
   it should "read scala files from project using zio streams" in {
     val fileExtension = ".scala"

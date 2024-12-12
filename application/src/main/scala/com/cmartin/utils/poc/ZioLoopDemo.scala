@@ -1,6 +1,6 @@
 package com.cmartin.utils.poc
 
-import zio._
+import zio.*
 
 class ZioLoopDemo
     extends ZIOAppDefault {
@@ -20,11 +20,15 @@ class ZioLoopDemo
     * as.reverse
     * }}}
     *
-    * def loop[R, E, A, S](initial: S)(cont: S => Boolean, inc: S => S)(body: S
-    * \=> ZIO[R, E, A]): ZIO[R, E, List[A]] = if (cont(initial))
-    * body(initial).flatMap(a => loop(inc(initial))(cont, inc)(body).map(as => a
-    * :: as)) else ZIO.succeedNow(List.empty[A])
+    * {{{
+    * def loop[R, E, A, S](initial: S)(cont: S => Boolean, inc: S => S)(body: S => ZIO[R, E, A]): ZIO[R, E, List[A]] =
+    *   if (cont(initial))
+    *     body(initial).flatMap(a => loop(inc(initial))(cont, inc)(body).map(as => a :: as))
+    *   else
+    *     ZIO.succeedNow(List.empty[A])
+    * }}}
     */
+
   /*
    * concepts
    */
@@ -36,30 +40,30 @@ class ZioLoopDemo
   /*
    * initial state of the business information
    */
-  val initial: MyInfo                    = MyInfo(10)
+  private val initial: MyInfo                    = MyInfo(10)
   /*
    * function that determines the continuation of the processing loop
    */
-  def cont(info: MyInfo): Boolean        = info.a > 0
+  private def cont(info: MyInfo): Boolean        = info.a > 0
   /*
    * function that gets the next status of business information
    */
-  def dec(info: MyInfo): MyInfo          = MyInfo(info.a - 1)
+  private def dec(info: MyInfo): MyInfo          = MyInfo(info.a - 1)
   /*
    * business function
    */
-  def body(info: MyInfo): UIO[MyResult]  =
+  def body(info: MyInfo): UIO[MyResult]          =
     ZIO.succeed(MyResult(info.a.toDouble, intTypeText(info.a)))
   /*
    * helper functions
    */
-  def intTypeText(a: Int): String        = if (a % 2 == 0) "even" else "odd"
-  def prettyPrint[A](l: List[A]): String = l.mkString("\n\t", "\n\t", "\n")
+  private def intTypeText(a: Int): String        = if (a % 2 == 0) "even" else "odd"
+  private def prettyPrint[A](l: List[A]): String = l.mkString("\n\t", "\n\t", "\n")
 
   /*
    * program
    */
-  val program =
+  val program: UIO[Unit] =
     for {
       _             <- ZIO.logInfo("zio loop demo:")
       evenOrOddList <- ZIO.loop(initial)(cont, dec)(body)
@@ -67,8 +71,8 @@ class ZioLoopDemo
     } yield ()
 
   // main function, needs exit = 0 [OK] or exit > 0 [ERROR]
-  // Here the interpreter runs the program and perform side-effects
-  override def run =
+  // Here the interpreter runs the program and perform side effects
+  override def run: UIO[Unit] =
     program
   // .catchAllCause(cause => UIO(Console.print(s"${cause.prettyPrint}")).exitCode)
 }
