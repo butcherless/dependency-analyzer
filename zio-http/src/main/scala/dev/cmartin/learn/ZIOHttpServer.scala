@@ -5,7 +5,8 @@ import zio.http.*
 
 import java.util.UUID
 
-object ZIOHttpServer extends ZIOAppDefault {
+object ZIOHttpServer
+    extends ZIOAppDefault {
 
   private def findOrder(id: UUID): UIO[Response] =
     for {
@@ -28,4 +29,3 @@ object ZIOHttpServer extends ZIOAppDefault {
   def run: Task[Nothing] =
     Server.serve(routes).provide(Server.default)
 }
-
