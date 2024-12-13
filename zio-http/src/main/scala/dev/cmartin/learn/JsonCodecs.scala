@@ -1,11 +1,21 @@
 package dev.cmartin.learn
 
+import dev.cmartin.learn.DomainModel.{Currency, CurrencySymbol}
 import zio.json.*
-import dev.cmartin.learn.DomainModel.Currency
 
 object JsonCodecs {
-  object Currency {
 
+  object CurrencySymbol {
+    implicit val encoder: JsonEncoder[CurrencySymbol] =
+      DeriveJsonEncoder.gen[CurrencySymbol]
+
+    implicit val decoder: JsonDecoder[CurrencySymbol] =
+      DeriveJsonDecoder.gen[CurrencySymbol]
+
+  }
+
+  object Currency {
+    import CurrencySymbol.*
     implicit val encoder: JsonEncoder[Currency] =
       DeriveJsonEncoder.gen[Currency]
 

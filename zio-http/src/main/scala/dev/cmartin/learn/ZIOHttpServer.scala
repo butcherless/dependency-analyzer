@@ -1,21 +1,29 @@
 package dev.cmartin.learn
 
+import dev.cmartin.learn.DomainData.currencyMap
+import dev.cmartin.learn.DomainModel.{Currency, CurrencySymbol}
+import dev.cmartin.learn.JsonCodecs.Currency.*
 import zio.*
 import zio.http.*
-import JsonCodecs.Currency.*
 import zio.json.EncoderOps
+
 import java.util.UUID
-import dev.cmartin.learn.DomainModel.Currency
-import dev.cmartin.learn.DomainData.currencyMap
 
 object ZIOHttpServer
     extends ZIOAppDefault {
 
+  def symbolToEnum(symbol: String): Option[CurrencySymbol] =
+    CurrencySymbol.values.find(_.toString == symbol)
+
   def findCurrency(symbol: String): UIO[Response] =
     ZIO.succeed(
-      currencyMap
-        .get(symbol)
-        .fold[Response](Response.status(Status.NotFound))(a => Response.json(a.toJson))
+      symbolToEnum(symbol)
+        .fold(Response.status(Status.BadRequest))(a =>
+          currencyMap.get(a)
+            .fold(Response.status(Status.NotFound))(a =>
+              Response.json(a.toJson)
+            )
+        )
     )
 
   private def findOrder(id: UUID): UIO[Response] =
@@ -26,7 +34,7 @@ object ZIOHttpServer
   private def REMOVE_findCurrency(symbol: String): UIO[Response] =
     for {
       _        <- ZIO.logInfo(s"requested currency symbol: $symbol")
-      currency <- ZIO.succeed(Currency(UUID.randomUUID(), "Euro", "EUR"))
+      currency <- ZIO.succeed(Currency(UUID.randomUUID(), "Euro", CurrencySymbol.EUR))
     } yield Response.json(currency.toJson)
 
   private val routes =
