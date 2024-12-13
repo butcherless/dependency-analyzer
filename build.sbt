@@ -76,10 +76,10 @@ lazy val `zio-http` = (project in file("zio-http"))
     name := "zio-http-server",
     commonSettings,
     libraryDependencies ++= Seq(
-      zioHttp
+      zioHttp,
+      zioJson
     )
   )
-
 
 // clear screen and banner
 lazy val cls = taskKey[Unit]("Prints a separator")

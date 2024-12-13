@@ -25,6 +25,7 @@ object Dependencies {
   lazy val zio        = "dev.zio" %% "zio"               % Versions.zio
   lazy val zioStreans = "dev.zio" %% "zio-streams"       % Versions.zio
   lazy val zioConfig  = "dev.zio" %% "zio-config"        % Versions.zioConfig
+  lazy val zioJson    = "dev.zio" %% "zio-json"          % Versions.zioJson
   lazy val zioLogging = "dev.zio" %% "zio-logging-slf4j" % Versions.zioLogging
   lazy val zioKafka   = "dev.zio" %% "zio-kafka"         % Versions.zioKafka
 
@@ -33,7 +34,6 @@ object Dependencies {
 
   // zio http server
   lazy val zioHttp = "dev.zio" %% "zio-http" % Versions.zioHttp
-
 
   //
   // testing code
