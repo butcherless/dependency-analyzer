@@ -38,7 +38,7 @@ final case class ZioHttpManager(client: HttpClient)
   private def makeRequest(gav: Gav): Request[MavenSearchResult] =
     basicRequest
       .get(uri"${buildUriFromGav(gav)}")
-      .response(asJson[MavenSearchResult].getRight)
+      .response(asJson[MavenSearchResult].orFail)
 
   // TODO: manage parse errors, just semver parsing
   // validate artifact properties, fail with domain error
