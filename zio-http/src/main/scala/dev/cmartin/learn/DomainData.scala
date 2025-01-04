@@ -6,7 +6,6 @@ import java.util.UUID
 
 object DomainData {
 
-
   val euroId   = UUID.fromString("513b7611-6645-499c-974c-edd2adb1d6d8")
   val dollarId = UUID.fromString("c83d19ed-671b-40ea-b08b-37b80e6d523f")
   val yenId    = UUID.fromString("3e90de53-bc7c-4f90-9ac1-85b9c59c0396")

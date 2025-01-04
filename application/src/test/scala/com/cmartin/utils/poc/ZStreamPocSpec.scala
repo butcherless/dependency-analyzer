@@ -29,7 +29,7 @@ class ZStreamPocSpec
     amount + event.amount
 
   def roundAmount(amount: Double): Double =
-    BigDecimal(amount).setScale(2, scala.math.BigDecimal.RoundingMode.HALF_DOWN).doubleValue
+    BigDecimal(amount).setScale(2, BigDecimal.RoundingMode.HALF_DOWN).doubleValue
 
   def createNowDate(): LocalDate =
     LocalDate.now()
@@ -37,15 +37,18 @@ class ZStreamPocSpec
   def isNowDatePolicy(date: LocalDate): Boolean =
     date.isAfter(createNowDate())
 
+  /* (annual salary amount) / (days per year) is the daily salary amount
+   * (days per year) * (daily salary amount) is the year compensation amount
+   * (year compensation amount) / (days per year) is the daily compensation amount
+   */
   def calcAmountPerDay(annualAmount: Int, daysPerYear: Int): Double =
     annualAmount * daysPerYear / scala.math.pow(365, 2)
 
   def formatAmount(amount: Double): UIO[String] =
-    // ZIO.succeed(String.format("%.2f", roundAmount(amount)))
     ZIO.succeed(formatCurrency(amount))
 
-  lazy val locale                            = Locale.GERMAN
-  lazy val formatter                         = NumberFormat.getCurrencyInstance(locale)
+  lazy val locale: Locale                    = Locale.GERMAN
+  lazy val formatter: NumberFormat           = NumberFormat.getCurrencyInstance(locale)
   def formatCurrency(amount: Double): String =
     formatter.format(amount)
 
@@ -76,7 +79,6 @@ class ZStreamPocSpec
 
     info(s"amount: $amount")
 
-    amount.isBlank shouldBe false
     amount should contain allOf (',', '.')
   }
 
@@ -90,13 +92,13 @@ class ZStreamPocSpec
     TestUtils.run(stream.runDrain)
   }
 
-  val moduleRegex: Regex = raw"^\.{1,2}/(.*)/src/.*".r
-  val path               = "../application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala"
-  val expectedSet        = Set("application", "integration", "scraper", "zio-http")
+  val moduleRegex: Regex       = raw"^\.{1,2}/(.*)/src/.*".r
+  val path                     = "../application/src/main/scala/com/cmartin/utils/http/ZioHttpManager.scala"
+  val expectedSet: Set[String] = Set("application", "integration", "scraper", "zio-http")
 
   it should "read scala files from project using zio streams" in {
     val fileExtension = ".scala"
-    val projectPath   = Paths.get("..");
+    val projectPath   = Paths.get("..")
 
     val program =
       ZStream
@@ -116,7 +118,7 @@ class ZStreamPocSpec
 
   it should "read scala files from project using scala streams" in {
     val fileExtension = ".scala"
-    val path          = Paths.get("..");
+    val path          = Paths.get("..")
 
     val modules =
       Files.list(path)
