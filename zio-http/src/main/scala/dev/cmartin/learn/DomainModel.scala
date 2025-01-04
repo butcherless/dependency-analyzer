@@ -13,5 +13,5 @@ object DomainModel {
   case class Product(id: UUID, name: String, costPrice: Double)
   case class OrderLine(id: UUID, campaign: Campaign, cost: Double, lineNumber: Int)
   case class Order(id: UUID, customer: Customer, product: Product, line: OrderLine)
-  case class Negotiation(id: UUID, customerId: UUID, campaign: Campaign, ammount: Amount)
+  case class Negotiation(id: UUID, customerId: UUID, campaign: Campaign, amount: Amount)
 }
