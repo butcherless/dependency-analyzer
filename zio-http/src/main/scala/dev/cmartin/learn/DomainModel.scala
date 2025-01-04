@@ -3,8 +3,13 @@ package dev.cmartin.learn
 import java.util.UUID
 
 object DomainModel {
-  enum CurrencySymbol:
-    case EUR, USD, JPY, GBP, CHF, BRL
+  enum CurrencySymbol(val description: String):
+    case EUR extends CurrencySymbol("Euro")
+    case USD extends CurrencySymbol("US Dollar")
+    case JPY extends CurrencySymbol("Japanese Yen")
+    case GBP extends CurrencySymbol("Pound Sterling")
+    case CHF extends CurrencySymbol("Swiss Franc")
+    case BRL extends CurrencySymbol("Brazilian Real")
 
   case class Currency(id: UUID, name: String, symbol: CurrencySymbol)
   case class Amount(currency: Currency, value: Double)
