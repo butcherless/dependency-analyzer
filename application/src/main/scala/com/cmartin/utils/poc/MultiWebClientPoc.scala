@@ -5,7 +5,7 @@ import zio.{IO, Schedule, UIO, ZIO}
 /** Defines a generic web client for performing parallel operations and
   * processing success and failure responses.
   */
-object MultiWebCientPoc {
+object MultiWebClientPoc {
 
   /** Client request ADT
     */
