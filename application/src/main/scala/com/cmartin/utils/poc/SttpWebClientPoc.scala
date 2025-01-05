@@ -73,13 +73,13 @@ object SttpWebClientPoc {
       body      <- getResponseBodyOrError(response)
     } yield body
 
-  def buildGetJsonRequest(url: String) =
+  private def buildGetJsonRequest(url: String) =
     basicRequest
       .contentType(MediaType.ApplicationJson)
       .get(uri"$url")
       .response(asJson[SlideShowResponse])
 
-  def buildSimpleAuthRequest(url: String, user: String, secret: String) =
+  private def buildSimpleAuthRequest(url: String, user: String, secret: String) =
     basicRequest
       .auth
       .basic(user, secret)
@@ -87,11 +87,11 @@ object SttpWebClientPoc {
       .get(uri"$url")
       .response(asJson[BasicUserDetails])
 
-  def getResponseOkOrError[A](response: Response[Either[ResponseException[String, String], A]]) =
+  private def getResponseOkOrError[A](response: Response[Either[ResponseException[String, String], A]]) =
     if (response.code == StatusCode.Ok) ZIO.succeed(response.body)
     else ZIO.fail(ProtocolError(s"response error: ${response.code}"))
 
-  def getResponseBodyOrError[A](bodyEither: Either[ResponseException[String, String], A]) =
+  private def getResponseBodyOrError[A](bodyEither: Either[ResponseException[String, String], A]) =
     bodyEither
       .fold(
         e => ZIO.fail(PayloadError(s"payload error: ${e.getMessage}")),
