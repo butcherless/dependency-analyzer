@@ -12,10 +12,10 @@ import java.util.UUID
 object ZIOHttpServer
     extends ZIOAppDefault {
 
-  def symbolToEnum(symbol: String): Option[CurrencySymbol] =
+  private def symbolToEnum(symbol: String): Option[CurrencySymbol] =
     CurrencySymbol.values.find(_.toString == symbol)
 
-  def findCurrency(symbol: String): UIO[Response] =
+  private def findCurrency(symbol: String): UIO[Response] =
     ZIO.succeed(
       symbolToEnum(symbol)
         .fold(Response.status(Status.BadRequest))(a =>
