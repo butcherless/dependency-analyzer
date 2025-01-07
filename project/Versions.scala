@@ -12,7 +12,7 @@ object Versions {
   val zio        = "2.1.14"
   val zioConfig  = "4.0.3"
   val zioHttp    = "3.0.1"
-  val zioJson    = "0.7.3"
+  val zioJson    = "0.7.4"
   val zioKafka   = "2.9.0"
   val zioLogging = "2.4.0"
 }
