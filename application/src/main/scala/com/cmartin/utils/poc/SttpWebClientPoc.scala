@@ -87,11 +87,11 @@ object SttpWebClientPoc {
       .get(uri"$url")
       .response(asJson[BasicUserDetails])
 
-  private def getResponseOkOrError[A](response: Response[Either[ResponseException[String, String], A]]) =
+  private def getResponseOkOrError[A](response: Response[Either[ResponseException[String], A]]) =
     if (response.code == StatusCode.Ok) ZIO.succeed(response.body)
     else ZIO.fail(ProtocolError(s"response error: ${response.code}"))
 
-  private def getResponseBodyOrError[A](bodyEither: Either[ResponseException[String, String], A]) =
+  private def getResponseBodyOrError[A](bodyEither: Either[ResponseException[String], A]) =
     bodyEither
       .fold(
         e => ZIO.fail(PayloadError(s"payload error: ${e.getMessage}")),

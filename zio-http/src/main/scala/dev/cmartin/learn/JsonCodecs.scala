@@ -21,15 +21,13 @@ object JsonCodecs {
   object Currency {
     import CurrencySymbol.{decoder, encoder}
 
-    /**
-     * Implicit JSON encoder for Currency.
-     */
+    /** Implicit JSON encoder for Currency.
+      */
     implicit val encoder: JsonEncoder[Currency] =
       DeriveJsonEncoder.gen[Currency]
 
-    /**
-     * Implicit JSON decoder for Currency.
-     */
+    /** Implicit JSON decoder for Currency.
+      */
     implicit val decoder: JsonDecoder[Currency] =
       DeriveJsonDecoder.gen[Currency]
   }
