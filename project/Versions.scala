@@ -8,11 +8,11 @@ object Versions {
   val scalatest  = "3.2.19"
   val scraper    = "3.1.2"
   val sttp       = "4.0.0-RC1"
-  val ulid       = "2025.1.3"
+  val ulid       = "2025.1.6"
   val zio        = "2.1.15"
   val zioConfig  = "4.0.3"
   val zioHttp    = "3.0.1"
-  val zioJson    = "0.7.17"
+  val zioJson    = "0.7.20"
   val zioKafka   = "2.10.0"
   val zioLogging = "2.4.0"
 }
