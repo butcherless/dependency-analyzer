@@ -1,14 +1,9 @@
-package com.cmartin.utils.poc
-
-import zio.UIO
+package com.cmartin.utils.poc.banking
 
 import java.time.LocalDate
 import java.util.UUID
 
-/** Common assets or services offered to retail clients in banking.
-  */
-object BankingGlobalPositionPoc {
-
+object Model {
   case class SavingsAccount(
       id: UUID,
       code: String,
@@ -63,20 +58,4 @@ object BankingGlobalPositionPoc {
       savingsAccountResume: SavingsAccountResume,
       loanResume: LoanResume
   )
-
-  private def getCardResume(clientId: UUID): UIO[CardResume] = ???
-
-  private def getSavingsAccountResume(clientId: UUID): UIO[SavingsAccountResume] = ???
-
-  private def getLoanResume(clientId: UUID): UIO[LoanResume] = ???
-
-  // get global position calling functions in parallel
-  def getGlobalPosition(clientId: UUID): UIO[GlobalPosition] =
-    getCardResume(clientId)
-      .zipPar(getSavingsAccountResume(clientId))
-      .zipPar(getLoanResume(clientId))
-      .map { case (cardResume, savingsAccountResume, loanResume) =>
-        GlobalPosition(cardResume, savingsAccountResume, loanResume)
-      }
-
 }
