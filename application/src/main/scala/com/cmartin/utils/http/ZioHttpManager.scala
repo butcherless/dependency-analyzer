@@ -27,8 +27,8 @@ final case class ZioHttpManager(client: HttpClient)
 
   private def getDependency(gav: Gav): IO[DomainError, GavPair] =
     for {
-      response      <- makeRequest(gav).send(client)
-                         .mapError(e => NetworkError(e.getMessage)) // TODO refactor
+      response <- makeRequest(gav).send(client)
+                    .mapError(e => NetworkError(e.getMessage)) // TODO refactor
       _             <- ZIO.logDebug(s"status code: ${response.code}")
       remoteGavList <- extractDependencies(response.body)
       _             <- logRemoteGavList(gav, remoteGavList)
