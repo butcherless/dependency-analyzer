@@ -26,6 +26,12 @@ object Data {
   private val LOAN_ONE_CODE    = "LOAN-1000"
   private val LOAN_ONE_BALANCE = BigDecimal(5001)
 
+  private val FUND_ONE_ID           = UUID.fromString("10c1ac93-0498-46c3-bc96-63d216c9e554")
+  private val FUND_ONE_ASSET_TYPE   = AssetType.Bond
+  private val FUND_ONE_RISK_PROFILE = RiskProfile.Moderate
+  private val FUND_ONE_SHARE_COUNT  = 1500
+  private val FUND_ONE_BALANCE      = BigDecimal(15000)
+
   private def createDebitCard(
       id: UUID,
       code: String,
@@ -61,6 +67,21 @@ object Data {
       balance = balance
     )
 
+  private def createFund(
+      id: UUID,
+      assetType: AssetType,
+      riskProfile: RiskProfile,
+      shareCount: Int,
+      balance: BigDecimal
+  ): Fund =
+    Fund(
+      id = id,
+      assetType = assetType,
+      riskProfile = riskProfile,
+      shareCount = shareCount,
+      balance = balance
+    )
+
   def createDebitCardOne: UIO[DebitCard] =
     ZIO.succeed(
       createDebitCard(
@@ -86,6 +107,17 @@ object Data {
         LOAN_ONE_ID,
         LOAN_ONE_CODE,
         LOAN_ONE_BALANCE
+      )
+    )
+
+  def createFundOne: UIO[Fund] =
+    ZIO.succeed(
+      createFund(
+        FUND_ONE_ID,
+        FUND_ONE_ASSET_TYPE,
+        FUND_ONE_RISK_PROFILE,
+        FUND_ONE_SHARE_COUNT,
+        FUND_ONE_BALANCE
       )
     )
 }

@@ -40,16 +40,25 @@ object BankingGlobalPositionPoc
       _     <- ZIO.logInfo("retrieved loan resume for client: $clientId")
     } yield LoanResume(List(loan), loan.balance)
 
+  private def getFundResume(clientId: UUID): UIO[FundResume] =
+    for {
+      fund  <- Data.createFundOne
+      delay <- generateDelay()
+      _     <- ZIO.sleep(delay)
+      _     <- ZIO.logInfo("retrieved fund resume for client: $clientId")
+    } yield FundResume(List(fund), fund.balance)
+
   // get global position calling functions in parallel
+  // <&> is an alias for '.zipPar' operator
   private def getGlobalPosition(clientId: UUID): UIO[GlobalPosition] =
     for {
-      _                                              <- ZIO.logInfo(s"getting global position for client: $clientId")
-      (cardResume, savingsAccountResume, loanResume) <-
-        getCardResume(clientId)
-          .zipPar(getSavingsAccountResume(clientId))
-          .zipPar(getLoanResume(clientId))
-      _                                              <- ZIO.logInfo(s"global position for client: $clientId")
-    } yield GlobalPosition(cardResume, savingsAccountResume, loanResume)
+      _                <- ZIO.logInfo(s"getting global position for client: $clientId")
+      (cs, as, ls, fs) <- getCardResume(clientId)
+                            <&> getSavingsAccountResume(clientId)
+                            <&> getLoanResume(clientId)
+                            <&> getFundResume(clientId)
+      _                <- ZIO.logInfo(s"retrieved global position for client: $clientId")
+    } yield GlobalPosition(cs, as, ls, fs)
 
   /*
    * program
