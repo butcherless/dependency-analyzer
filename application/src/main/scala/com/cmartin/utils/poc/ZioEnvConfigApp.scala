@@ -19,8 +19,7 @@ object ZioEnvConfigApp
 
     val filename: Config[String]         = Config.string("DL_FILENAME")
     val exclusions: Config[List[String]] = Config.listOf(Config.string("DL_EXCLUSIONS"))
-    val config: Config[EnvConfig]        =
-      (filename ++ exclusions).map { case (f, es) => EnvConfig(f, es) }
+    val config: Config[EnvConfig]        = (filename ++ exclusions).map { case (f, es) => EnvConfig(f, es) }
 
     def readFromEnv(): IO[ApplicationError, EnvConfig] =
       ConfigProvider.envProvider
