@@ -5,5 +5,5 @@ addSbtPlugin("org.scalameta"  % "sbt-scalafmt"           % "2.6.1")
 addSbtPlugin("org.scoverage"  % "sbt-coveralls"          % "1.3.15")
 addSbtPlugin("org.scoverage"  % "sbt-scoverage"          % "2.4.4")
 addSbtPlugin("ch.epfl.scala"  % "sbt-bloop"              % "2.1.0")
-addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"           % "0.14.6")
+addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"           % "0.14.7")
 addDependencyTreePlugin
