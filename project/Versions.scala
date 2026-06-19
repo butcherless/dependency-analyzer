@@ -8,7 +8,7 @@ object Versions {
   val scalatest  = "3.2.20"
   val scraper    = "3.2.0"
   val sttp       = "4.0.25"
-  val ulid       = "2026.1.6"
+  val ulid       = "2026.1.7"
   val zio        = "2.1.26"
   val zioConfig  = "4.0.7"
   val zioHttp    = "3.11.2"

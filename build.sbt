@@ -110,11 +110,7 @@ ThisBuild / assemblyMergeStrategy := {
   case "META-INF/versions/11/module-info.class"                   => MergeStrategy.last
   case "META-INF/versions/9/module-info.class"                    => MergeStrategy.discard
   case "META-INF/versions/9/OSGI-INF/MANIFEST.MF"                 => MergeStrategy.last
-  case "scala-native/scala-native.properties"                     => MergeStrategy.first
   case PathList("scala", "math", "ScalaNumber.class")             => MergeStrategy.first
-  case PathList("just", "semver", xs @ _*)                        => MergeStrategy.first
-  case PathList("just", "decver", xs @ _*)                        => MergeStrategy.first
-  case PathList("scala-native", xs @ _*) if xs.last endsWith ".c" => MergeStrategy.first
   case x                                                          =>
     val oldStrategy = assemblyMergeStrategy.value
     oldStrategy(x)
