@@ -1,9 +1,15 @@
 addSbtPlugin("com.eed3si9n"   % "sbt-assembly"           % "2.3.1")
 addSbtPlugin("com.github.sbt" % "sbt-native-packager"    % "1.11.7")
-addSbtPlugin("org.jmotor.sbt" % "sbt-dependency-updates" % "1.2.9")
+//addSbtPlugin("org.jmotor.sbt" % "sbt-dependency-updates" % "1.2.9")
 addSbtPlugin("org.scalameta"  % "sbt-scalafmt"           % "2.6.1")
-addSbtPlugin("org.scoverage"  % "sbt-coveralls"          % "1.3.15")
-addSbtPlugin("org.scoverage"  % "sbt-scoverage"          % "2.4.4")
+//addSbtPlugin("org.scoverage"  % "sbt-coveralls"          % "1.3.15")
+//addSbtPlugin("org.scoverage"  % "sbt-scoverage"          % "2.4.4")
 addSbtPlugin("ch.epfl.scala"  % "sbt-bloop"              % "2.1.0")
+<<<<<<< HEAD
 addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"           % "0.14.7")
 addDependencyTreePlugin
+=======
+//addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"           % "0.14.6")
+//addDependencyTreePlugin
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.7.0")
+>>>>>>> 71f4a0b (upgrade to sbt 2)
