@@ -26,7 +26,7 @@ jobs:
       - name: tests
         run: sbt test
       - name: tests with coverage
-        run: sbt xcoverage
+        run: sbt -v --client xcoverage
       - name: upload coverage reports to codecov
         uses: codecov/codecov-action@v7
         env:
