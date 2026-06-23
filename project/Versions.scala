@@ -4,7 +4,7 @@ object Versions {
   val figlet4s   = "0.3.2"
   val json4s     = "4.0.7"
   val justSemver = "1.3.0"
-  val logback    = "1.5.34"
+  val logback    = "1.5.35"
   val scalatest  = "3.2.20"
   val scraper    = "3.2.0"
   val sttp       = "4.0.25"
