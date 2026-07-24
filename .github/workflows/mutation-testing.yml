@@ -29,7 +29,14 @@ jobs:
         # against this runner's 16GB. Capped to 1 here for reliability on an unattended weekly run
         # - correctness matters more than speed for a report-only job. The local default (3) is
         # left alone since it's already proven reliable on a real machine.
-        run: sbt application/stryker --concurrency 1 | tee stryker-output.log
+        #
+        # set -o pipefail is required: GitHub's default `bash -e {0}` does NOT enable pipefail, so
+        # without it this step's exit code comes from `tee` (always 0), silently masking a real
+        # `sbt application/stryker` failure behind a green checkmark - confirmed happened on the
+        # first run of this workflow (2026-07-24).
+        run: |
+          set -o pipefail
+          sbt application/stryker --concurrency 1 | tee stryker-output.log
       - name: Report mutation score
         if: always()
         run: |

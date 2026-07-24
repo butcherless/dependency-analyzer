@@ -79,7 +79,7 @@ Error channel is `DomainError`, not yet fully threaded through to the app's exit
 **Status: broken — no working baseline exists.** Investigated in depth on 2026-07-24; don't re-diagnose from scratch:
 
 - **Fixed a real, guaranteed-failure bug**: `ZStreamPocSpec` walked the whole repo tree asserting the discovered module set was exactly `{application, integration, scraper, zio-http}`. Stryker always creates a sandbox under `application/target/stryker4s-<uuid>/src/main/scala/...` before running, which that scan picked up as a spurious 5th module. Fixed by excluding `target/` from the scan (verified the fix holds even with a leftover sandbox present). Necessary, but **not sufficient** — Stryker still fails after this fix.
-- **Ruled out, each via direct reproduction**: sbt 2.0.3 vs 1.12.14, JDK 25 vs 21, and execution-sandbox socket/IPC restrictions — identical failure under every combination.
+- **Ruled out, each via direct reproduction**: sbt 2.0.3 vs 1.12.14, JDK 25 vs 21, execution-sandbox socket/IPC restrictions, and the local dev machine itself — a clean `workflow_dispatch` run on GitHub's own Ubuntu 24.04 runner (sbt 1.12.14, JDK 21) hit the identical `InitialTestRunFailedException`, same shape as every local run.
 - **Failure shape** (same in both legacy and default test-runner modes): compiles fine, prints "Creating 3 test-runners" / "Starting initial test run...", then fails within ~5-12s with zero test output and no stack trace — even at `set ThisBuild / logLevel := Level.Debug`. `stryker4s.exception.InitialTestRunFailedException` swallows the real cause; a known-underspecified failure class ([stryker4s#226](https://github.com/stryker-mutator/stryker4s/issues/226)), not diagnosable further from this side without instrumenting `sbt-stryker4s` itself or filing an upstream issue with this repro.
 - **Next step**: bisect by trimming the test suite/module set, or file an upstream issue with this history attached.
 
@@ -90,6 +90,8 @@ The project's sbt/JDK pins were lowered regardless of the Stryker outcome — bo
 `.jvmopts` (`-Xmx4096m`, repo root) is kept in case `legacy-test-runner = true` becomes relevant again — it needs more heap than sbt's 1GB default once forking subprocesses.
 
 Not part of the main push-triggered CI (`ci.yml`) — mutation runs are slow and exploratory. `.github/workflows/mutation-testing.yml` runs it weekly (Friday 15:00 UTC) plus on manual `workflow_dispatch`, posting the score to the run's step summary and uploading the HTML report as a build artifact (90-day retention); it will fail the same way as the local run until the above is resolved. It's report-only regardless: `thresholds.break = 0` in `stryker4s.conf` until a baseline mutation score exists on this codebase.
+
+The workflow's first-ever run (2026-07-24, manual `workflow_dispatch`) showed **green despite Stryker genuinely failing** — the step piped `sbt application/stryker | tee stryker-output.log`, and GitHub's default `bash -e {0}` doesn't enable `pipefail`, so the step's exit code came from `tee` (always 0) instead of `sbt`. Fixed with an explicit `set -o pipefail`. If a run ever shows green again, verify the step log actually contains a `Mutation score` line before trusting it — don't rely on the checkmark alone for this workflow.
 
 ## Versioning policy
 
