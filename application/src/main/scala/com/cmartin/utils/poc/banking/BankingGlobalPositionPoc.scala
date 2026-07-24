@@ -52,13 +52,13 @@ object BankingGlobalPositionPoc
   // <&> is an alias for '.zipPar' operator
   private def getGlobalPosition(clientId: UUID): UIO[GlobalPosition] =
     for {
-      _                <- ZIO.logInfo(s"getting global position for client: $clientId")
-      (cs, as, ls, fs) <- getCardResume(clientId)
-                            <&> getSavingsAccountResume(clientId)
-                            <&> getLoanResume(clientId)
-                            <&> getFundResume(clientId)
-      _                <- ZIO.logInfo(s"retrieved global position for client: $clientId")
-    } yield GlobalPosition(cs, as, ls, fs)
+      _      <- ZIO.logInfo(s"getting global position for client: $clientId")
+      result <- getCardResume(clientId)
+                  <&> getSavingsAccountResume(clientId)
+                  <&> getLoanResume(clientId)
+                  <&> getFundResume(clientId)
+      _      <- ZIO.logInfo(s"retrieved global position for client: $clientId")
+    } yield GlobalPosition(result._1, result._2, result._3, result._4)
 
   /*
    * program

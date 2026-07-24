@@ -106,6 +106,7 @@ class ZStreamPocSpec
         .filter(path => Files.isRegularFile(path))
         .map(_.toString)
         .filter(path => path.endsWith(fileExtension))
+        .filterNot(path => path.contains("/target/"))
         .collect { case moduleRegex(module) => module }
         .runFold(Set.empty[String])((set, module) => set + module)
 
@@ -124,11 +125,12 @@ class ZStreamPocSpec
       Files.list(path)
         .iterator()
         .asScala
-        .filter(p => Files.isDirectory(p) && !Files.isHidden(p))
+        .filter(p => Files.isDirectory(p) && !Files.isHidden(p) && p.getFileName.toString != "target")
         .flatMap { dir =>
           Files.walk(dir)
             .iterator().asScala
             .map(_.toString)
+            .filterNot(path => path.contains("/target/"))
             .find(path => path.endsWith(fileExtension))
             .collect { case moduleRegex(module) => module }
 

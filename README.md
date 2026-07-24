@@ -18,7 +18,7 @@ Execute the following commands:
     sbt "assembly" "application/dependencyList/toFile /tmp/dep-list.log -f"
     export DL_FILENAME=/tmp/dep-list.log
     export DL_EXCLUSIONS=com.cmartin.learn #comma separated
-    java -jar application/target/scala-2.13/depAnalyzerApp.jar
+    java -jar application/target/scala-3.3.8/depAnalyzerApp.jar
 
 ## Run the application with Docker
 
