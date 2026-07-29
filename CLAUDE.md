@@ -13,15 +13,16 @@ Build tool: **sbt** (see `project/build.properties` for the pinned version). Sca
 ```
 sbt compile                          # compile all modules
 sbt application/test                 # fast unit tests only (application module)
-sbt test                             # ALL modules' tests, including integration's live-network *ITSpec — no root-level exclusion
+sbt xtest                            # alias: application/test;scraper/test;zio-http/test — the fast/unit test phase, excludes integration
+sbt test                             # ALL modules' tests, including integration's live-network *ITSpec — no root-level exclusion; prefer xtest for CI-like runs
 sbt "testOnly *VersionManagerSpec"   # run a single spec
-sbt xcoverage                        # clean;coverage;test;coverageReport (alias, see build.sbt)
+sbt xcoverage                        # clean;coverage;xtest;coverageReport (alias, see build.sbt) — also excludes integration
 sbt scalafmtAll                      # format all modules per .scalafmt.conf
 sbt scalafmtCheckAll                 # format check (CI-enforced)
 sbt assembly                         # build fat jars for every module (custom merge strategy in build.sbt)
 sbt xdup                             # dependencyUpdates alias — check for outdated deps
 sbt xdeplist                         # dependencyList/toFile /tmp/dep-analyzer.log -f
-sbt integration/test                 # integration module only — *ITSpec, hits real network/filesystem
+sbt integration/test                 # integration module only — *ITSpec, hits real network/filesystem; runs in CI as a separate non-blocking step (continue-on-error)
 sbt application/stryker              # mutation testing (Stryker4s); config in stryker4s.conf — currently broken, see "Mutation testing" below
 ```
 

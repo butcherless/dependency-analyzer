@@ -20,7 +20,10 @@ jobs:
       - name: compile
         run: sbt -v compile
       - name: tests
-        run: sbt test
+        run: sbt xtest
+      - name: integration tests (live network, non-blocking)
+        continue-on-error: true
+        run: sbt integration/test
       - name: formatting
         run: sbt scalafmtCheckAll
       - name: tests with coverage

@@ -94,7 +94,10 @@ cls := {
   println(s"$chars$brs ")
 }
 
-addCommandAlias("xcoverage", "clean;coverage;test;coverageReport")
+// excludes integration's live-network *ITSpec from the fast/unit test phase; run those
+// explicitly via `sbt integration/test` (see CI's separate, non-blocking step)
+addCommandAlias("xtest", "application/test;scraper/test;zio-http/test")
+addCommandAlias("xcoverage", "clean;coverage;xtest;coverageReport")
 addCommandAlias("xreload", "clean;reload")
 addCommandAlias("xstart", "clean;reStart")
 addCommandAlias("xstop", "reStop;clean")
