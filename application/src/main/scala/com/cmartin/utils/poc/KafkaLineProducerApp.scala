@@ -21,7 +21,7 @@ object KafkaLineProducerApp
   private val filename                       = "application/src/test/resources/dep-list.log"
   private val PROJECT_NAME                   = "dependency-analyzer"
 
-  private val mainProgram =
+  private def mainProgram(producer: Producer) =
     StreamBasedLogic.getLinesFromFilename(filename)
       .mapZIOPar(2)(parseDepLine)
       .partition(isValidDep)
@@ -33,7 +33,7 @@ object KafkaLineProducerApp
               processMavenDependency(MavenDependencyRequest(DEPENDENCY_LINE_TOPIC, PROJECT_NAME, dep))
             )
             .tap(logObject)
-            .via(Producer.produceAll(MavenDependencySerde.key, MavenDependencySerde.value))
+            .via(producer.produceAll(MavenDependencySerde.key, MavenDependencySerde.value))
             .tap(logMetadata(_)(0.10)),
           // invalid line case
           invalidStream.collectType[InvalidDependency]
@@ -41,22 +41,19 @@ object KafkaLineProducerApp
               processInvalidDependency(InvalidDependencyRequest(INVALID_LINE_TOPIC, PROJECT_NAME, dep))
             )
             .tap(logObject)
-            .via(Producer.produceAll(InvalidDependencySerde.key, InvalidDependencySerde.value))
+            .via(producer.produceAll(InvalidDependencySerde.key, InvalidDependencySerde.value))
         ).runDrain
       }
-
-  private def producerLayer =
-    ZLayer.scoped(
-      Producer.make(
-        settings = ProducerSettings(BOOSTRAP_SERVERS)
-      )
-    )
 
   def run: RIO[ZIOAppArgs & Scope, Unit] =
     for {
       _ <- ZIO.log("kafka line producer application")
-      _ <- ZIO.scoped(mainProgram)
-             .provide(producerLayer)
+      _ <- ZIO.scoped {
+             for {
+               producer <- Producer.make(settings = ProducerSettings(BOOSTRAP_SERVERS))
+               _        <- mainProgram(producer)
+             } yield ()
+           }
     } yield ()
 
 }
