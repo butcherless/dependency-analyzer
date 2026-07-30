@@ -25,20 +25,26 @@ final case class ZioHttpManager(client: HttpClient)
     ZIO.partitionPar(gavList)(getDependency).withParallelism(4)
       .map { case (es, as) => GavResults(es, as) }
 
+  private val networkRetrySchedule = Schedule.exponential(500.millis) && Schedule.recurs(2)
+
   private def getDependency(gav: Gav): IO[DomainError, GavPair] =
     for {
-      response <- makeRequest(gav).send(client)
-                    .mapError(e => NetworkError(e.getMessage)) // TODO refactor
+      response      <- makeRequest(gav).send(client)
+                         .mapError(e => NetworkError(e.getMessage)) // TODO refactor
+                         .retry(networkRetrySchedule)
       _             <- ZIO.logDebug(s"status code: ${response.code}")
       remoteGavList <- extractDependencies(response.body)
       _             <- logRemoteGavList(gav, remoteGavList)
       remoteGav     <- retrieveFirstMajor(remoteGavList, gav)
     } yield GavPair(gav, remoteGav)
 
-  private def makeRequest(gav: Gav): Request[MavenSearchResult] =
+  private def makeRequest(gav: Gav): Request[MavenSearchResult] = {
+    import scala.concurrent.duration.DurationInt
     basicRequest
       .get(uri"${buildUriFromGav(gav)}")
+      .readTimeout(2.minutes)
       .response(asJson[MavenSearchResult].orFail)
+  }
 
   // TODO: manage parse errors, just semver parsing
   // validate artifact properties, fail with domain error
