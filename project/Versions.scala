@@ -4,7 +4,7 @@ object Versions {
   val figlet4s   = "0.3.2"
   val json4s     = "4.0.7"
   val justSemver = "1.3.0"
-  val logback    = "1.6.1"
+  val logback    = "1.6.3"
   val scalatest  = "3.2.20"
   val scraper    = "3.2.0"
   val sttp       = "4.0.26"
@@ -13,6 +13,6 @@ object Versions {
   val zioConfig  = "4.0.8"
   val zioHttp    = "3.11.3"
   val zioJson    = "0.9.2"
-  val zioKafka   = "3.7.0"
+  val zioKafka   = "3.7.1"
   val zioLogging = "2.5.3"
 }
