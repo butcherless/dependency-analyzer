@@ -11,8 +11,8 @@ object Versions {
   val ulid       = "2026.2.2"
   val zio        = "2.1.26"
   val zioConfig  = "4.0.8"
-  val zioHttp    = "3.11.3"
-  val zioJson    = "0.9.2"
+  val zioHttp    = "3.11.4"
+  val zioJson    = "0.10.0"
   val zioKafka   = "3.7.1"
   val zioLogging = "2.5.3"
 }
