@@ -114,6 +114,8 @@ ThisBuild / assemblyMergeStrategy := {
   case "META-INF/versions/9/module-info.class"                    => MergeStrategy.discard
   case "META-INF/versions/9/OSGI-INF/MANIFEST.MF"                 => MergeStrategy.last
   case PathList("scala", "math", "ScalaNumber.class")             => MergeStrategy.first
+  case PathList("scala", "annotation", "unroll.class")            => MergeStrategy.first
+  case PathList("scala", "annotation", "unroll.tasty")            => MergeStrategy.first
   case x                                                          =>
     val oldStrategy = assemblyMergeStrategy.value
     oldStrategy(x)
