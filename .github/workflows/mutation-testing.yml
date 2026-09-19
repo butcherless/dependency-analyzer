@@ -34,6 +34,16 @@ jobs:
         # without it this step's exit code comes from `tee` (always 0), silently masking a real
         # `sbt application/stryker` failure behind a green checkmark - confirmed happened on the
         # first run of this workflow (2026-07-24).
+        #
+        # DL_FILENAME/DL_EXCLUSIONS must be set here too, matching build.sbt's `Test / envVars`:
+        # sbt-stryker4s forks its own test-runner JVMs outside sbt's normal Test/fork machinery, so
+        # they inherit only the ambient process environment, never sbt's Test/envVars overlay.
+        # Without these, FileManagerSpec's "should read system property" test fails for real in
+        # Stryker's fork (confirmed root cause of the long-standing InitialTestRunFailedException;
+        # see CLAUDE.md's "Mutation testing (Stryker4s)" section).
+        env:
+          DL_FILENAME: /tmp/dep-list.log
+          DL_EXCLUSIONS: "com.cmartin.learn, com.cmartin.poc"
         run: |
           set -o pipefail
           sbt application/stryker --concurrency 1 | tee stryker-output.log
