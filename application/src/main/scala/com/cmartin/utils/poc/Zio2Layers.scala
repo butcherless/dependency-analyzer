@@ -160,8 +160,7 @@ object Zio2Layers
         DatabaseLive.layer,
         AirlineRepositoryLive.layer,
         AircraftRepositoryLive.layer,
-        AuditServiceLive.layer,
-        ZLayer.Debug.mermaid
+        AuditServiceLive.layer
       )
 
     val program = for {

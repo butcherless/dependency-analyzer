@@ -41,7 +41,7 @@ object ZIOHttpServer
     Routes(
       Method.GET / Root                            -> handler(Response.text("Greetings at your service")),
       Method.GET / "greet"                         -> handler { (req: Request) =>
-        val name = req.queryParamToOrElse("name", "World")
+        val name = req.queryParamOrElse("name", "World")
         Response.text(s"Hello $name!")
       },
       Method.GET / "orders" / uuid("id")           ->

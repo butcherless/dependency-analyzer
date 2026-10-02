@@ -62,7 +62,6 @@ object ConfigHelper {
       FileManager.layer,
       DependencyLogicManager.layer,
       ZioHttpManager.layer,
-      clientBackendLayer,
-      ZLayer.Debug.mermaid
+      clientBackendLayer
     )
 }
