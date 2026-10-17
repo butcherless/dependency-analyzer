@@ -1,5 +1,5 @@
 addSbtPlugin("com.eed3si9n"       % "sbt-assembly"        % "2.5.0")
-addSbtPlugin("com.github.sbt"     % "sbt-native-packager" % "1.12.0")
+addSbtPlugin("com.github.sbt"     % "sbt-native-packager" % "1.13.0")
 //addSbtPlugin("org.jmotor.sbt" % "sbt-dependency-updates" % "1.2.9")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"        % "2.6.2")
 //addSbtPlugin("org.scoverage"  % "sbt-coveralls"          % "1.3.15")
@@ -8,5 +8,5 @@ addSbtPlugin("ch.epfl.scala"      % "sbt-bloop"           % "2.1.2")
 addSbtPlugin("ch.epfl.scala"      % "sbt-scalafix"        % "0.14.9")
 //addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"           % "0.14.6")
 //addDependencyTreePlugin
-addSbtPlugin("com.timushev.sbt"   % "sbt-updates"         % "0.7.0")
+addSbtPlugin("com.timushev.sbt"   % "sbt-updates"         % "0.7.1")
 addSbtPlugin("io.stryker-mutator" % "sbt-stryker4s"       % "1.1.1")
