@@ -41,27 +41,35 @@ behalf. Tell them to commit or stash first.
 ## Step 2 — Check the Scala version
 
 ```bash
-curl -s "https://api.github.com/repos/scala/scala3/releases" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-lts = [r['tag_name'] for r in data if 'LTS' in (r.get('name') or '') and '-RC' not in r['tag_name']]
-print('latest LTS:', lts[0] if lts else 'none found')
-"
+gh api 'repos/scala/scala3/releases?per_page=100' \
+  --jq '[.[] | select(.prerelease | not) | select((.name // "") | test("LTS")) | .tag_name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))] | max_by(split(".") | map(tonumber))'
 grep '^  val scala ' project/Versions.scala
 ```
 
+The query takes the *highest* LTS version, never the first one listed: GitHub orders releases by
+date, and a patch on an older LTS line (`3.3.9`, published after `3.9.0`) can come first.
+
 ## Step 3 — Apply the project's versioning policy
 
-Latest LTS only, never a newer mainline release.
+Always the latest LTS or a newer LTS, never a mainline release. A project may stay off LTS for
+tests or PoCs if it says so, in CLAUDE.md's "Versioning policy" or in a comment on the
+`Versions.scala` Scala value (none in this project today). Check for an exception first, then:
 
-## Step 4 — Confirm scope with the user
+- **Exception recorded** → leave the Scala version alone apart from patch bumps on its own line.
+  Report it as an exception, not a deviation.
+- **Older than the latest LTS** → apply the latest LTS, using Step 4.
+- **Equal to the latest LTS, or a newer LTS** → nothing to do.
+- **On a non-LTS release with no recorded exception** → report it as a policy deviation and ask.
+  Don't downgrade on your own.
 
-If a newer LTS exists, don't migrate unprompted — a Scala version bump is the change here most
-likely to cause real compile fallout (deprecations, `-Wunused` warnings, occasionally a genuine
-inference difference like the one CLAUDE.md documents from the `3.3.8` migration). Ask before
-touching it.
+## Step 4 — Scope
 
-## Step 5 — Apply and verify (only if the user confirms a migration)
+Moving to the latest LTS needs no confirmation. It's still the change here most likely to cause
+real compile fallout (deprecations, `-Wunused` warnings, occasionally a genuine inference
+difference like the one CLAUDE.md documents from the `3.3.8` migration), so Step 5's verify gate
+is what protects it.
+
+## Step 5 — Apply and verify
 
 1. Edit `project/Versions.scala`'s `scala` value.
 2. Verify:
@@ -81,6 +89,6 @@ touching it.
 ## Step 6 — Report
 
 - **What changed** — old Scala version → new, and whether the verify pass was clean.
-- **What came up** — anything unexpected, even on success: `git status` blocking the run, a newer
-  LTS found but left unmigrated because the user didn't confirm. This is often more useful than
-  the version diff itself.
+- **What came up** — anything unexpected, even on success: `git status` blocking the run, a recorded
+  LTS exception, a non-LTS version with no exception. This is often more useful than the version
+  diff itself.
