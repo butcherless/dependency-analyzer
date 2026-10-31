@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - 'main'
+    paths-ignore:
+      - '**.md'
+      - '**.adoc'
+      - '**.puml'
+      - '**.graphml'
   pull_request:
     types: [ opened ]
 
@@ -17,23 +22,17 @@ jobs:
       - name: Setup JDK
         uses: ./.github/actions/setup-jdk
       - uses: sbt/setup-sbt@v1
+      # Each step reuses one sbt server through --client, instead of starting a new JVM. xcoverage
+      # leaves coverage on in that server, so assembly must run first or the jars get instrumented.
       - name: compile
-        run: sbt -v compile
-      - name: tests
-        run: sbt xtest
-      - name: integration tests (live network, non-blocking)
-        continue-on-error: true
-        run: sbt integration/test
+        run: sbt -v --client compile
       - name: formatting
-        run: sbt scalafmtCheckAll
+        run: sbt -v --client scalafmtCheckAll
+      - name: assembly
+        run: sbt -v --client assembly
       - name: tests with coverage
         run: sbt -v --client xcoverage
       - name: upload coverage reports to codecov
         uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: assembly
-        run: sbt assembly
-      - name: dependency updates
-        run: sbt xdup
-

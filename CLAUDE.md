@@ -30,7 +30,7 @@ The packaged app needs env vars `DL_FILENAME` (dependency-list log) and `DL_EXCL
 ## Modules
 
 - **`application`**: the app (`com.cmartin.utils`). `src/main/scala/com/cmartin/utils/poc/` holds unrelated ZIO/Kafka experiments that aren't wired into `DependencyAnalyzerApp`.
-- **`integration`**: `*ITSpec` tests against real files and network. Runs in CI as a non-blocking step.
+- **`integration`**: `*ITSpec` tests against real files and network. Runs weekly or manually through `.github/workflows/integration-tests.yml`, not on push.
 - **`scraper`**, **`zio-http`**: unrelated learning modules.
 
 Local Kafka for the PoCs: `docker-kafka/docker-compose.yml` (see `docs/poc-stream-based.md`).

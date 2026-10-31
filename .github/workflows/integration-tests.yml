@@ -1,0 +1,27 @@
+name: Integration Tests
+
+# Live-network tests: they depend on external services, so they run weekly rather than on every push.
+on:
+  schedule:
+    - cron: '0 15 * * 5'  # every Friday at 15:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup JDK
+        uses: ./.github/actions/setup-jdk
+      - uses: sbt/setup-sbt@v1
+      - name: integration tests
+        run: sbt integration/test
