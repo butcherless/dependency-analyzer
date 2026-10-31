@@ -31,9 +31,7 @@ format `group:artifact:version`. It needs to be parsed. For instance:
 ## Kafka commands
 
 
-Confluentinc version: `latest`
-
-Kafka version: `3.4.1`
+Confluentinc version: `8.4.0`, running in KRaft mode (no ZooKeeper)
 
 Start Kafka:
 
