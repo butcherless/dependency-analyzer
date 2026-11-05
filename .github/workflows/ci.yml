@@ -30,6 +30,19 @@ jobs:
       - name: Setup JDK
         uses: ./.github/actions/setup-jdk
       - uses: sbt/setup-sbt@v1
+      - name: Restore incremental compilation state
+        # setup-java's `cache: sbt` stores downloaded dependencies only, never compiled output.
+        # Restore and save are split: xcoverage below starts with `clean` and recompiles with
+        # coverage, so the cache is saved right after assembly, while target/ still holds the
+        # plain build. A single actions/cache step would save the instrumented state instead.
+        id: target-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            **/target
+          key: ${{ runner.os }}-sbt-target-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-sbt-target-
       # Each step reuses one sbt server through --client, instead of starting a new JVM. xcoverage
       # leaves coverage on in that server, so assembly must run first or the jars get instrumented.
       - name: compile
@@ -38,6 +51,13 @@ jobs:
         run: sbt -v --client scalafmtCheckAll
       - name: assembly
         run: sbt -v --client assembly
+      - name: Save incremental compilation state
+        if: steps.target-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            **/target
+          key: ${{ steps.target-cache.outputs.cache-primary-key }}
       - name: tests with coverage
         run: sbt -v --client xcoverage
       - name: upload coverage reports to codecov
