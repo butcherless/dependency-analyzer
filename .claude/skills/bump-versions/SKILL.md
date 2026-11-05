@@ -66,7 +66,7 @@ tests or PoCs if it says so, in CLAUDE.md's "Versioning policy" or in a comment 
 
 Moving to the latest LTS needs no confirmation. It's still the change here most likely to cause
 real compile fallout (deprecations, `-Wunused` warnings, occasionally a genuine inference
-difference like the one CLAUDE.md documents from the `3.3.8` migration), so Step 5's verify gate
+difference like the `withFilter` one CLAUDE.md documents), so Step 5's verify gate
 is what protects it.
 
 ## Step 5 — Apply and verify

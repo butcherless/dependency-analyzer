@@ -99,8 +99,6 @@ cls := {
 addCommandAlias("xtest", "application/test;scraper/test;zio-http/test")
 addCommandAlias("xcoverage", "clean;coverage;xtest;coverageReport")
 addCommandAlias("xreload", "clean;reload")
-addCommandAlias("xstart", "clean;reStart")
-addCommandAlias("xstop", "reStop;clean")
 addCommandAlias("xupdate", "clean;update")
 addCommandAlias("xdup", "dependencyUpdates")
 addCommandAlias("xdl", "dependencyList")

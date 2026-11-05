@@ -23,8 +23,6 @@ sbt xdeplist                         # dependencyList to /tmp/dep-analyzer.log
 sbt application/stryker              # mutation testing, see below
 ```
 
-`xstart`/`xstop` are broken: `sbt-revolver` isn't in `project/plugins.sbt`.
-
 The packaged app needs env vars `DL_FILENAME` (dependency-list log) and `DL_EXCLUSIONS` (comma-separated groupId prefixes to skip). See README.md for the full run sequence.
 
 ## Modules
