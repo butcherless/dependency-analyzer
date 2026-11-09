@@ -31,9 +31,12 @@ Renovate PRs or the Dependency Dashboard issue instead.
 ## Step 1 — Sync with the remote
 
 ```bash
-git status   # must be clean
+gh auth status   # must succeed — Step 2's Scala check depends on it
+git status       # must be clean
 git pull
 ```
+
+If `gh auth status` fails, **abort the skill** and tell the user to run `! gh auth login`.
 
 If `git status` shows local changes, **abort the skill** — don't pull or stash on the user's
 behalf. Tell them to commit or stash first.
