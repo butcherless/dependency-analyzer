@@ -89,6 +89,17 @@ is what protects it.
 3. If it fails, stop — investigate before deciding whether to revert, fix the fallout, or flag it
    as needing more review than expected.
 
+## Step 5c — Commit, then ask before pushing
+
+Commit the Scala bump once its verify gate has passed. Commit on the current branch.
+Message shape: `chore: bump Scala to <version>`, with a body for anything the diff doesn't
+say on its own (a major bump's migration notes, fallout fixed alongside it, which verify layers
+ran). Stage only the files that bump touched; an unrelated problem the verify gate exposed gets its
+own commit.
+
+**Never push without asking.** Once the user says yes, push, and after the push don't watch CI
+unless they ask.
+
 ## Step 6 — Report
 
 - **What changed** — old Scala version → new, and whether the verify pass was clean.
