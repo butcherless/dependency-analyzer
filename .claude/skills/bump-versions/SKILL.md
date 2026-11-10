@@ -86,6 +86,9 @@ is what protects it.
    `sbt test` runs every module including `integration`'s live-network `*ITSpec` — a flaky failure
    there (e.g. a live Maven Central call) isn't necessarily the version bump's fault; rerun that
    one spec in isolation before concluding it's a real regression.
+   This repo is on sbt 1, where `test` runs the whole suite. If it ever moves to sbt 2, use
+   `testFull` instead: sbt 2's `test` is `testQuick`, its disk cache survives `clean`, and it can
+   report zero tests run as `[success]`.
 3. If it fails, stop — investigate before deciding whether to revert, fix the fallout, or flag it
    as needing more review than expected.
 
