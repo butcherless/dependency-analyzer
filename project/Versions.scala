@@ -10,7 +10,7 @@ object Versions {
   val sttp       = "4.1.2"
   val ulid       = "2026.2.5"
   val zio        = "2.1.27"
-  val zioConfig  = "4.1.0"
+  val zioConfig  = "4.1.2"
   val zioHttp    = "3.11.6"
   val zioJson    = "1.1.1"
   val zioKafka   = "3.8.1"
