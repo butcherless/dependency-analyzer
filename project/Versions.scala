@@ -1,7 +1,7 @@
 object Versions {
   val scala      = "3.9.0"
   val config     = "1.4.8"
-  val figlet4s   = "0.3.2"
+  val figlet4s   = "1.0.0"
   val json4s     = "4.0.7"
   val justSemver = "1.4.0"
   val logback    = "1.6.7"
